@@ -21,32 +21,25 @@
 OPPO Enco X3、Enco Free4、Enco Air5、Enco Air2 Pro 等
 
 ### 咪帅（MiShuai）系列
-Glaze Max（型号32）、M3、M30、M88、MP10、MP12、M2、M3a、R3、MP16、R3c
+Glaze Max、M2、M3、M3a、M8、M30、M88、MP10、MP12、MP16、R3、R3c
 
 模块通过设备名称自动识别耳机类型，无需手动配置。
 
 ## 功能
 
-### 已实现
-
 | 功能 | OPPO | 咪帅 | 说明 |
 |------|:----:|:----:|------|
 | 电量显示 | ✅ | ✅ | 左耳、右耳、充电盒 |
-| 降噪切换 | ✅ | ✅ | 深度降噪 / 通透 / 关闭 |
+| 降噪切换 | ✅ | ✅ | OPPO: 降噪/自适应/通透/关闭 |
+|  |  |  | 咪帅: 降噪/抗风降噪/通透/关闭 |
+| 大师调音 | ✅ | ✅ | OPPO: 至臻原音/高清解析/纯享人声/澎湃低音/丹拿特调 |
+|  |  |  | 咪帅: HiFi/流行/摇滚/自适应 |
 | 通知栏电量 | ✅ | ✅ | 系统通知栏常驻显示 |
 | 超级岛 | ✅ | ✅ | 焦点岛弹窗显示电量 |
 | 融合设备中心 | ✅ | ✅ | 系统蓝牙设置集成 |
+| 双设备连接 | ✅ | - | OPPO 专有 |
 | 自适应降噪 | ✅ | - | OPPO 专有 |
 | 空间音频 | ✅ | - | OPPO 专有 |
-| 游戏模式 | ✅ | - | OPPO 通过 SPP 控制；咪帅为本地设置 |
-
-### 待实现
-
-- **抗风降噪** — 咪帅协议支持（0x00），但尚未在降噪切换循环中加入
-- **大师调音（EQ）** — 咪帅支持 EQ 设置（协议 0x20），需对照源码完成三档音效映射
-- **小米原生控制台** — 电量显示正常，降噪切换尚需适配
-- **触控按键设置** — 查询已通，UI 待接入
-- **游戏模式（咪帅）** — 本地编解码切换，不走 SPP，需反编译咪帅 App 分析实现
 
 ## 系统要求
 
@@ -68,8 +61,8 @@ Glaze Max（型号32）、M3、M30、M88、MP10、MP12、M2、M3a、R3、MP16、
 
 ```
 OppoPods（原始）          HybridPods（本项目）
-├── RfcommController     ├── RfcommController        (OPPO)
-│   └── OPPO RFCOMM      ├── MiShuaiRfcommController  (咪帅 SPP)
+├── RfcommController     ├── RfcommController        (OPPO RFCOMM)
+│                        ├── MiShuaiRfcommController  (咪帅 SPP)
 ├── Packets.kt           ├── Packets.kt               (OPPO AA 帧)
 │                        ├── MiShuaiPackets.kt         (咪帅 00 帧)
 │                        ├── MiShuaiParser.kt          (咪帅响应解析)
@@ -79,22 +72,12 @@ OppoPods（原始）          HybridPods（本项目）
 └── MiLinkServiceHook    └── MiLinkServiceHook         (双控制器状态)
 ```
 
-### 协议对比
-
-| 方面 | OPPO | 咪帅 |
-|------|------|------|
-| 帧头 | `0xAA` | `0x00` |
-| SPP UUID | `0000079A-D102-11E1-9B23-...` | `158627bc-0547-8787-87ba-...` |
-| 电量查询 | Cmd 0x0106 | Query 0x01 |
-| 降噪控制 | Cmd 0x0404 | Type 0x2C |
-| 游戏模式 | Cmd 0x0403（SPP） | 本地设置（无 SPP） |
-
 ## 致谢
 
-- [OppoPods](https://github.com/1812z/OppoPods) by 1812z — 原始项目
+- [OppoPods](https://github.com/1812z/OppoPods) by 1812z — 基础项目
 - [HyperPods](https://github.com/Art-Chen/HyperPods) by Art_Chen — 原始灵感
 - [Miuix](https://github.com/YuKongA/miuix) — HyperOS 风格 Compose UI 组件
-- 咪帅协议文档基于 Frida 抓包 + 咪帅 App 反编译
+- 咪帅协议文档基于 Frida 抓包 + 咪帅 App 反编译分析
 
 ## 许可证
 
