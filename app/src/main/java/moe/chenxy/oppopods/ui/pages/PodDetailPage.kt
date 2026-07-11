@@ -39,7 +39,6 @@ import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Text
 import moe.chenxy.oppopods.pods.EqPreset
 import moe.chenxy.oppopods.pods.MiShuaiPackets
-import moe.chenxy.oppopods.utils.miuiStrongToast.data.BatteryParams
 import top.yukonga.miuix.kmp.preference.OverlayDropdownPreference
 import top.yukonga.miuix.kmp.preference.SwitchPreference
 
@@ -110,6 +109,7 @@ fun PodDetailPage(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 podControlItems(
+                    podName = podName,
                     batteryParams = batteryParams,
                     wearStatus = wearStatus,
                     ancMode = ancMode,
@@ -152,6 +152,7 @@ fun PodDetailPage(
         }
 
         podControlItems(
+            podName = podName,
             batteryParams = batteryParams,
             wearStatus = wearStatus,
             ancMode = ancMode,
@@ -185,6 +186,7 @@ private fun rememberPodImagePainter(path: String?) = remember(path) {
 } ?: painterResource(R.drawable.img_box)
 
 private fun LazyListScope.podControlItems(
+    podName: String,
     batteryParams: BatteryParams,
     wearStatus: WearStatus,
     ancMode: NoiseControlMode,

@@ -39,6 +39,7 @@
     <string name="enabled">On</string>
     <string name="off">Off</string>
     <string name="noise_cancellation_title">NC</string>
+    <string name="wind_nr_title">Wind NR</string>
     <string name="noise_cancellation_smart">Smart</string>
     <string name="noise_cancellation_light">Light</string>
     <string name="noise_cancellation_medium">Medium</string>

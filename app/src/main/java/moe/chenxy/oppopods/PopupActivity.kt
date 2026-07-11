@@ -266,6 +266,7 @@ private fun PopupContent(onMore: () -> Unit, onDone: () -> Unit) {
             NoiseControlMode.NOISE_CANCELLATION_LIGHT -> 6
             NoiseControlMode.NOISE_CANCELLATION_MEDIUM -> 7
             NoiseControlMode.NOISE_CANCELLATION_DEEP -> 8
+            NoiseControlMode.WIND_NR -> 9
         }
         Intent(OppoPodsAction.ACTION_ANC_SELECT).apply {
             putExtra("status", status)

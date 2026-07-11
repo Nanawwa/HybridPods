@@ -100,7 +100,7 @@ object MiBluetoothToastHook : HookContext() {
                 ancCycleIntent.setIdentifier("BTHeadset$address")
                 ancCycleIntent.putExtra("device_name", alias ?: bluetoothDevice.name ?: "")
                 val moduleContext = context.createPackageContext(
-                    "moe.chenxy.oppopods", Context.CONTEXT_IGNORE_SECURITY
+                    "moe.chenxy.hybridpods", Context.CONTEXT_IGNORE_SECURITY
                 )
                 val headsetBitmap = PodImageLoader.loadBoxBitmap(context, prefs, address)
                     ?: BitmapFactory.decodeResource(moduleContext.resources, R.drawable.img_box)
@@ -113,7 +113,7 @@ object MiBluetoothToastHook : HookContext() {
                     context,
                     0,
                     Intent("chen.action.oppopods.show_pods_ui").apply {
-                        setClassName("moe.chenxy.oppopods", "moe.chenxy.oppopods.PopupActivity")
+                        setClassName("moe.chenxy.hybridpods", "moe.chenxy.oppopods.PopupActivity")
                         putExtra("android.bluetooth.device.extra.DEVICE", bluetoothDevice)
                         putExtra("bluetoothaddress", bluetoothDevice.address)
                         putExtra("device_name", alias)

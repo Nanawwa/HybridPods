@@ -13,7 +13,7 @@ import moe.chenxy.oppopods.config.PodImageResource
 import moe.chenxy.oppopods.config.imageUri
 
 object PodImageLoader {
-    private const val MODULE_PACKAGE = "moe.chenxy.oppopods"
+    private const val MODULE_PACKAGE = "moe.chenxy.hybridpods"
 
     /**
      * MiShuai model mapping table.

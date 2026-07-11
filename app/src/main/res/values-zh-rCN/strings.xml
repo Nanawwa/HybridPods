@@ -40,6 +40,7 @@
     <string name="enabled">开启</string>
     <string name="off">关闭</string>
     <string name="noise_cancellation_title">降噪</string>
+    <string name="wind_nr_title">抗风</string>
     <string name="noise_cancellation_smart">智能</string>
     <string name="noise_cancellation_light">轻度</string>
     <string name="noise_cancellation_medium">中度</string>

@@ -795,6 +795,7 @@ object RfcommController {
                 NoiseControlMode.NOISE_CANCELLATION_DEEP -> 8
                 NoiseControlMode.TRANSPARENCY -> 3
                 NoiseControlMode.ADAPTIVE -> 4
+                NoiseControlMode.WIND_NR -> 1  // OPPO doesn't support Wind NR, map to Off
             }
             changeUIAncStatus(currentAnc)
 

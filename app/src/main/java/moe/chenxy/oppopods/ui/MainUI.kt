@@ -410,6 +410,7 @@ fun MainUI(
             NoiseControlMode.NOISE_CANCELLATION_LIGHT -> 6
             NoiseControlMode.NOISE_CANCELLATION_MEDIUM -> 7
             NoiseControlMode.NOISE_CANCELLATION_DEEP -> 8
+            NoiseControlMode.WIND_NR -> 9
         }
         Intent(OppoPodsAction.ACTION_ANC_SELECT).apply {
             this.putExtra("status", status)
@@ -984,13 +985,13 @@ private fun sendBluetoothModuleBroadcast(context: Context, action: String) {
 }
 
 private fun isLauncherIconHidden(context: Context): Boolean {
-    val component = ComponentName(context, "moe.chenxy.oppopods.LauncherActivity")
+    val component = ComponentName(context, "moe.chenxy.hybridpods.LauncherActivity")
     val state = context.packageManager.getComponentEnabledSetting(component)
     return state == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
 }
 
 private fun setLauncherIconHidden(context: Context, hidden: Boolean) {
-    val component = ComponentName(context, "moe.chenxy.oppopods.LauncherActivity")
+    val component = ComponentName(context, "moe.chenxy.hybridpods.LauncherActivity")
     val state = if (hidden) {
         PackageManager.COMPONENT_ENABLED_STATE_DISABLED
     } else {
