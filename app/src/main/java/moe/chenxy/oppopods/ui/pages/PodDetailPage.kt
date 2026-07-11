@@ -187,6 +187,7 @@ fun PodDetailPage(
 @Composable
 private fun rememberPodImagePainter(path: String?, address: String?, prefs: android.content.SharedPreferences?): androidx.compose.ui.graphics.painter.Painter {
     val context = LocalContext.current
+    val fallbackPainter = painterResource(R.drawable.img_box)
     return remember(path, address) {
         // Try custom image first
         path?.let {
@@ -199,7 +200,7 @@ private fun rememberPodImagePainter(path: String?, address: String?, prefs: andr
                 val bitmap = PodImageLoader.loadBoxBitmap(context, prefs, address)
                 bitmap?.let { BitmapPainter(it.asImageBitmap()) }
             } else null
-        } ?: painterResource(R.drawable.img_box)
+        } ?: fallbackPainter
     }
 }
 
