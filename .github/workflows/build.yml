@@ -26,6 +26,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Install Android SDK Platform 37
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-37" || true
+
       - name: Grant execute permission
         run: chmod +x gradlew
 
@@ -45,7 +49,7 @@ jobs:
           fi
 
           VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts || echo "unversioned")
-          OUT_NAME="OppoPods-${VERSION_NAME}-release.apk"
+          OUT_NAME="HybridPods-${VERSION_NAME}-release.apk"
 
           BUILD_TOOLS=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)
 
@@ -67,13 +71,11 @@ jobs:
           fi
           echo "apk=$OUT_NAME" >> "$GITHUB_OUTPUT"
 
-      # Non-zipped artifact upload — GitHub Actions 2026-02 feature
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.sign.outputs.apk }}
           path: ./${{ steps.sign.outputs.apk }}
-          archive: false
           if-no-files-found: error
 
       - name: Create GitHub Release

@@ -132,12 +132,12 @@ object MiShuaiParser {
 
     /**
      * Parse EQ mode response (query type 0x04).
-     * [7] = current EQ preset index.
+     * MiShuai source code reads bArr[i + 8] — index 8 from packet start.
      */
     fun parseEqMode(data: ByteArray): Int? {
-        if (data.size < 8) return null
+        if (data.size < 9) return null
         if (!isValidResponse(data)) return null
-        return data[7].toInt() and 0xFF
+        return data[8].toInt() and 0xFF
     }
 
     // ── Touch settings parsing ───────────────────────────────────────
