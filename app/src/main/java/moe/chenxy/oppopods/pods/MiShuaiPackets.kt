@@ -91,12 +91,18 @@ object MiShuaiPackets {
     const val EQ_HIFI = 0              // HiFi
     const val EQ_POP = 1               // POP 流行
     const val EQ_ROCK = 2              // Rock 摇滚
-    const val EQ_FPS = 3               // FPS 游戏音效
-    const val EQ_LC = 4                // Lc
-    const val EQ_CUSTOM = 5            // Custom EQ
+    const val EQ_CUSTOM = 5            // Custom 自定义
 
-    /** All supported EQ preset IDs. */
-    val EQ_PRESETS = intArrayOf(EQ_HIFI, EQ_POP, EQ_ROCK, EQ_FPS, EQ_LC, EQ_CUSTOM)
+    /** MiShuai Glaze Max supported EQ presets. */
+    val EQ_PRESETS = intArrayOf(EQ_HIFI, EQ_POP, EQ_ROCK, EQ_CUSTOM)
+
+    /** Display names for MiShuai EQ presets. */
+    val EQ_PRESET_NAMES = mapOf(
+        EQ_HIFI to "HiFi",
+        EQ_POP to "流行",
+        EQ_ROCK to "摇滚",
+        EQ_CUSTOM to "自定义"
+    )
 
     // ── WorkMode (game/music mode, WorkMode = 0x25) ─────────────────
 
@@ -141,6 +147,7 @@ object MiShuaiPackets {
         NoiseControlMode.OFF -> ANC_OFF.toByte()
         NoiseControlMode.NOISE_CANCELLATION -> ANC_DEEP_ANC.toByte()
         NoiseControlMode.TRANSPARENCY -> ANC_TRANSPARENCY.toByte()
+        NoiseControlMode.WIND_NR -> ANC_WIND_NR.toByte()
         else -> ANC_OFF.toByte()
     }
 }

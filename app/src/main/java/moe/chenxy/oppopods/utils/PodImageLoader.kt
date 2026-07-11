@@ -83,7 +83,14 @@ object PodImageLoader {
             val bluetoothManager = context.getSystemService(BluetoothManager::class.java)
             val adapter = bluetoothManager?.adapter
             val device = adapter?.getRemoteDevice(address)
-            device?.name ?: device?.alias ?: ""
+            // Try name first, then alias, then bonded device cached name
+            val name = device?.name?.takeIf { it.isNotBlank() }
+                ?: device?.alias?.takeIf { it.isNotBlank() }
+                ?: ""
+            name
+        } catch (_: SecurityException) {
+            // BLUETOOTH_CONNECT permission not granted
+            ""
         } catch (_: Exception) {
             ""
         }

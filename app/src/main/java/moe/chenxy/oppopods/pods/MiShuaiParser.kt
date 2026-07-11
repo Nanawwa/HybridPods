@@ -23,14 +23,14 @@ object MiShuaiParser {
     }
 
     /**
-     * Get the response type (byte 1 �?the command/query category).
+     * Get the response type (byte 1 �?the command/query category).
      */
     fun getResponseType(data: ByteArray): Int {
         return data[1].toInt() and 0xFF
     }
 
     /**
-     * Get the sub-type (byte 5) �?for GET_BL_INFO responses.
+     * Get the sub-type (byte 5) �?for GET_BL_INFO responses.
      */
     fun getSubType(data: ByteArray): Int {
         return if (data.size > 5) data[5].toInt() and 0xFF else 0
@@ -72,7 +72,7 @@ object MiShuaiParser {
     // ── ANC mode parsing ─────────────────────────────────────────────
 
     /**
-     * Parse ANC mode response (query type 0x07 �?ANC switch state).
+     * Parse ANC mode response (query type 0x07 �?ANC switch state).
      *
      * 抓包数据: 00 27 02 00 04 07 02 00 00
      * [7] = current ANC mode byte.
@@ -83,7 +83,7 @@ object MiShuaiParser {
 
         val mode = data[7].toInt() and 0xFF
         return when (mode) {
-            MiShuaiPackets.ANC_WIND_NR -> NoiseControlMode.OFF
+            MiShuaiPackets.ANC_WIND_NR -> NoiseControlMode.WIND_NR
             MiShuaiPackets.ANC_DEEP_ANC -> NoiseControlMode.NOISE_CANCELLATION
             MiShuaiPackets.ANC_TRANSPARENCY -> NoiseControlMode.TRANSPARENCY
             MiShuaiPackets.ANC_OFF -> NoiseControlMode.OFF
@@ -101,7 +101,7 @@ object MiShuaiParser {
 
         val mode = data[7].toInt() and 0xFF
         return when (mode) {
-            MiShuaiPackets.ANC_WIND_NR -> NoiseControlMode.OFF
+            MiShuaiPackets.ANC_WIND_NR -> NoiseControlMode.WIND_NR
             MiShuaiPackets.ANC_DEEP_ANC -> NoiseControlMode.NOISE_CANCELLATION
             MiShuaiPackets.ANC_TRANSPARENCY -> NoiseControlMode.TRANSPARENCY
             MiShuaiPackets.ANC_OFF -> NoiseControlMode.OFF

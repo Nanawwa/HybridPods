@@ -443,6 +443,7 @@ object MiShuaiRfcommController {
                 NoiseControlMode.OFF -> MiShuaiPackets.ANC_OFF
                 NoiseControlMode.NOISE_CANCELLATION -> MiShuaiPackets.ANC_DEEP_ANC
                 NoiseControlMode.TRANSPARENCY -> MiShuaiPackets.ANC_TRANSPARENCY
+                NoiseControlMode.WIND_NR -> MiShuaiPackets.ANC_WIND_NR
                 else -> MiShuaiPackets.ANC_OFF
             }
         )

@@ -38,6 +38,8 @@ import moe.chenxy.oppopods.utils.miuiStrongToast.data.BatteryParams
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Text
 import moe.chenxy.oppopods.pods.EqPreset
+import moe.chenxy.oppopods.pods.MiShuaiPackets
+import moe.chenxy.oppopods.utils.miuiStrongToast.data.BatteryParams
 import top.yukonga.miuix.kmp.preference.OverlayDropdownPreference
 import top.yukonga.miuix.kmp.preference.SwitchPreference
 
@@ -270,25 +272,35 @@ private fun LazyListScope.podControlItems(
                     }
                 )
             }
-            val eqOptions = listOf(
-                stringResource(R.string.eq_preset_authentic),
-                stringResource(R.string.eq_preset_detail),
-                stringResource(R.string.eq_preset_vocal),
-                stringResource(R.string.eq_preset_bass),
-                stringResource(R.string.eq_preset_dynaudio),
-            )
+            val isMiShuaiDevice = podName.contains("mi shuai", ignoreCase = true) ||
+                    podName.contains("mishuai", ignoreCase = true)
+
+            val eqOptions: List<String>
+            val eqValues: List<Int>
+            val currentEqIndex: Int
+
+            if (isMiShuaiDevice) {
+                eqValues = MiShuaiPackets.EQ_PRESETS.toList()
+                eqOptions = eqValues.map { MiShuaiPackets.EQ_PRESET_NAMES[it] ?: "EQ $it" }
+                currentEqIndex = eqValues.indexOf(eqPreset).coerceAtLeast(0)
+            } else {
+                eqValues = EqPreset.ALL
+                eqOptions = listOf(
+                    stringResource(R.string.eq_preset_authentic),
+                    stringResource(R.string.eq_preset_detail),
+                    stringResource(R.string.eq_preset_vocal),
+                    stringResource(R.string.eq_preset_bass),
+                    stringResource(R.string.eq_preset_dynaudio),
+                )
+                currentEqIndex = EqPreset.ALL.indexOf(eqPreset).coerceAtLeast(0)
+            }
+
             OverlayDropdownPreference(
                 title = stringResource(R.string.eq_preset_title),
-                summary = stringResource(R.string.eq_preset_summary),
+                summary = eqOptions.getOrElse(currentEqIndex) { "" },
                 items = eqOptions,
-                selectedIndex = EqPreset.ALL.indexOf(eqPreset).coerceAtLeast(0),
-                onSelectedIndexChange = { onEqPresetChange(EqPreset.ALL[it]) }
-            )
-            SwitchPreference(
-                title = stringResource(R.string.dual_device_connection),
-                summary = stringResource(if (dualDeviceConnection) R.string.enabled else R.string.off),
-                checked = dualDeviceConnection,
-                onCheckedChange = onDualDeviceConnectionChange
+                selectedIndex = currentEqIndex,
+                onSelectedIndexChange = { onEqPresetChange(eqValues[it]) }
             )
         }
     }

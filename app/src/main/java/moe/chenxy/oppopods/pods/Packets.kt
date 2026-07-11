@@ -63,7 +63,8 @@ enum class NoiseControlMode {
     NOISE_CANCELLATION_MEDIUM,
     NOISE_CANCELLATION_DEEP,
     ADAPTIVE,
-    TRANSPARENCY
+    TRANSPARENCY,
+    WIND_NR
 }
 
 fun NoiseControlMode.isNoiseCancellation(): Boolean {
@@ -72,7 +73,8 @@ fun NoiseControlMode.isNoiseCancellation(): Boolean {
         NoiseControlMode.NOISE_CANCELLATION_SMART,
         NoiseControlMode.NOISE_CANCELLATION_LIGHT,
         NoiseControlMode.NOISE_CANCELLATION_MEDIUM,
-        NoiseControlMode.NOISE_CANCELLATION_DEEP -> true
+        NoiseControlMode.NOISE_CANCELLATION_DEEP,
+        NoiseControlMode.WIND_NR -> true
         else -> false
     }
 }
@@ -830,7 +832,7 @@ object NotificationSupportParser {
  *
  * Payload shape: `03 <key> 01 <bitmap bytes>`. The bitmap uses the same bit
  * positions as the SET command: bit 4 = 深度, 5 = 中度, 6 = 轻度. Key 0x01
- * (the user-selected mode) is ignored here �?that already flows through
+ * (the user-selected mode) is ignored here �?that already flows through
  * [AncModeParser].
  */
 object SmartAncLevelParser {
