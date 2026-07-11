@@ -642,6 +642,13 @@ class BluetoothUpstreamHeadsetHook : HookContext() {
             Log.d(TAG, "send real status skipped: no callback reason=$reason address=$address")
             return
         }
+        // Only push status when at least one controller is truly connected
+        val oppoConnected = runCatching { RfcommController.currentStatusSnapshot().connected }.getOrDefault(false)
+        val miShuaiConnected = runCatching { MiShuaiRfcommController.currentStatusSnapshot().connected }.getOrDefault(false)
+        if (!oppoConnected && !miShuaiConnected) {
+            Log.d(TAG, "send real status skipped: no connected controller reason=$reason address=$address")
+            return
+        }
         val payload = realRefreshPayload()
         handler.post {
             callbacks.values.toList().forEach { callback ->
@@ -659,10 +666,10 @@ class BluetoothUpstreamHeadsetHook : HookContext() {
     private fun realRefreshPayload(): String {
         val oppoSnapshot = runCatching { RfcommController.currentStatusSnapshot() }
             .getOrNull()
-            ?.takeIf { it.address != null || it.battery != null }
+            ?.takeIf { it.connected && (it.address != null || it.battery != null) }
         val miShuaiSnapshot = runCatching { MiShuaiRfcommController.currentStatusSnapshot() }
             .getOrNull()
-            ?.takeIf { it.address != null || it.battery != null }
+            ?.takeIf { it.connected && (it.address != null || it.battery != null) }
         val battery = oppoSnapshot?.battery ?: miShuaiSnapshot?.battery ?: currentBattery
         val anc = currentAnc
         if (!hasTransparencyVocalEnhancementState && oppoSnapshot != null) {
@@ -685,7 +692,11 @@ class BluetoothUpstreamHeadsetHook : HookContext() {
     }
 
     private fun effectiveBattery(): BatteryParams? {
-        return runCatching { RfcommController.currentStatusSnapshot().battery }.getOrNull() ?: currentBattery
+        val oppoBattery = runCatching { RfcommController.currentStatusSnapshot() }
+            .getOrNull()?.takeIf { it.connected }?.battery
+        val miShuaiBattery = runCatching { MiShuaiRfcommController.currentStatusSnapshot() }
+            .getOrNull()?.takeIf { it.connected }?.battery
+        return oppoBattery ?: miShuaiBattery ?: currentBattery
     }
 
     private fun displayBattery(params: PodParams?): Int? {

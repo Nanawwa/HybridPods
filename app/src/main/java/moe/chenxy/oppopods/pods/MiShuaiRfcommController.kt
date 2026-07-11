@@ -43,7 +43,7 @@ object MiShuaiRfcommController {
     private const val AUTO_RECONNECT_DELAY_MS = 120_000L
     private const val POLL_INTERVAL_MS = 50L       // 50ms poll interval
     private const val HEARTBEAT_EVERY = 5          // heartbeat every 5 polls = 250ms
-    private const val DISCONNECT_TIMEOUT = 20      // 20 polls × 50ms = 1s
+    private const val DISCONNECT_TIMEOUT = 60      // 60 polls × 50ms = 3s (increased to avoid false reconnects during HyperOS floating window transitions)
     private const val BATTERY_POLL_INTERVAL_MS = 30_000L
     private const val COMMAND_TIMEOUT_POLLS = 8    // 8 × 50ms = 400ms before retry
     private const val MAX_RETRIES = 3
@@ -191,6 +191,7 @@ object MiShuaiRfcommController {
             this.putExtra("status", status)
         }
         sendExternalPodsStatusBroadcast(OppoPodsAction.ACTION_PODS_ANC_CHANGED) {
+            if (::mDevice.isInitialized) putExtra("address", mDevice.address)
             putExtra("status", status)
         }
     }

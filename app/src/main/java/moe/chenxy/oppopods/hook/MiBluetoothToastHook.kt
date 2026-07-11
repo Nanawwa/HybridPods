@@ -28,8 +28,13 @@ import moe.chenxy.oppopods.pods.detectDeviceCapabilities
 @SuppressLint("MissingPermission")
 object MiBluetoothToastHook : HookContext() {
 
-    // ANC 模式本地缓存，用于循环切换和状态同步（1=�?2=降噪 3=通�?4=自适应�?    // 通过接收 ACTION_PODS_ANC_CHANGED 广播�?RfcommController 保持同步
+    // ANC 模式本地缓存，用于循环切换和状态同步（1=Off, 2=降噪, 3=通透, 4=自适应）
+    // 通过接收 ACTION_PODS_ANC_CHANGED 广播与 RfcommController 保持同步
     private var localAncMode = 1
+
+    // Debounce: prevent AOD flickering from repeated notification updates
+    private var lastNotifLeftBattery = -1
+    private var lastNotifRightBattery = -1
 
     override fun onHook() {
 
@@ -41,15 +46,22 @@ object MiBluetoothToastHook : HookContext() {
 
         @SuppressLint("WrongConstant")
         fun createPodsNotification(bluetoothDevice: BluetoothDevice?, context: Context, batteryParams: BatteryParams) {
+            if (bluetoothDevice == null) {
+                Log.e("HybridPods", "createPodsNotification: btDevice null")
+                return
+            }
+            // Debounce: skip notification update if battery values haven't changed (prevents AOD flickering)
+            val leftBat = batteryParams.left?.battery ?: -1
+            val rightBat = batteryParams.right?.battery ?: -1
+            if (leftBat == lastNotifLeftBattery && rightBat == lastNotifRightBattery) return
+            lastNotifLeftBattery = leftBat
+            lastNotifRightBattery = rightBat
+
             val miheadset_notification_Box = context.resources.getIdentifier("miheadset_notification_Box", "string", "com.xiaomi.bluetooth")
             val miheadset_notification_LeftEar = context.resources.getIdentifier("miheadset_notification_LeftEar", "string", "com.xiaomi.bluetooth")
             val miheadset_notification_RightEar = context.resources.getIdentifier("miheadset_notification_RightEar", "string", "com.xiaomi.bluetooth")
             val miheadset_notification_Disconnect = context.resources.getIdentifier("miheadset_notification_Disconnect", "string", "com.xiaomi.bluetooth")
             val system_notification_accent_color = context.resources.getIdentifier("system_notification_accent_color", "color", "android")
-            if (bluetoothDevice == null) {
-                Log.e("HybridPods", "createPodsNotification: btDevice null")
-                return
-            }
             try {
                 val address: String = bluetoothDevice.address
                 var alias: String? = bluetoothDevice.alias

@@ -56,14 +56,26 @@ object HeadsetStateDispatcher : HookContext() {
                 if (currState == BluetoothHeadset.STATE_CONNECTED) {
                     statusBarManager.setIconVisibility("wireless_headset", true)
                     when (deviceType) {
-                        DeviceType.MI_SHUAI -> MiShuaiRfcommController.connectPod(context, device, prefs)
-                        else -> RfcommController.connectPod(context, device, prefs)
+                        DeviceType.MI_SHUAI -> {
+                            RfcommController.disconnectedPod(context, device)
+                            MiShuaiRfcommController.connectPod(context, device, prefs)
+                        }
+                        else -> {
+                            MiShuaiRfcommController.disconnectedPod(context, device)
+                            RfcommController.connectPod(context, device, prefs)
+                        }
                     }
                 } else if (currState == BluetoothHeadset.STATE_DISCONNECTING || currState == BluetoothHeadset.STATE_DISCONNECTED) {
                     statusBarManager.setIconVisibility("wireless_headset", false)
                     when (deviceType) {
-                        DeviceType.MI_SHUAI -> MiShuaiRfcommController.disconnectedPod(context, device)
-                        else -> RfcommController.disconnectedPod(context, device)
+                        DeviceType.MI_SHUAI -> {
+                            MiShuaiRfcommController.disconnectedPod(context, device)
+                            RfcommController.disconnectedPod(context, device)
+                        }
+                        else -> {
+                            RfcommController.disconnectedPod(context, device)
+                            MiShuaiRfcommController.disconnectedPod(context, device)
+                        }
                     }
                 }
             }
@@ -88,8 +100,14 @@ object HeadsetStateDispatcher : HookContext() {
                         Log.d("HybridPods", "connect request from app device=${device.name}/${device.address}")
                         val deviceType = DeviceType.detect(device.name ?: "")
                         when (deviceType) {
-                            DeviceType.MI_SHUAI -> MiShuaiRfcommController.connectPod(context, device, prefs, appRequested = true)
-                            else -> RfcommController.connectPod(context, device, prefs, appRequested = true)
+                            DeviceType.MI_SHUAI -> {
+                                RfcommController.disconnectedPod(context, device)
+                                MiShuaiRfcommController.connectPod(context, device, prefs, appRequested = true)
+                            }
+                            else -> {
+                                MiShuaiRfcommController.disconnectedPod(context, device)
+                                RfcommController.connectPod(context, device, prefs, appRequested = true)
+                            }
                         }
                     }
                     OppoPodsAction.ACTION_DISCONNECT_POD_REQUEST -> {
@@ -97,8 +115,14 @@ object HeadsetStateDispatcher : HookContext() {
                         Log.d("HybridPods", "disconnect request from app device=${device.name}/${device.address}")
                         val deviceType = DeviceType.detect(device.name ?: "")
                         when (deviceType) {
-                            DeviceType.MI_SHUAI -> MiShuaiRfcommController.disconnectedPod(context, device)
-                            else -> RfcommController.disconnectedPod(context, device)
+                            DeviceType.MI_SHUAI -> {
+                                MiShuaiRfcommController.disconnectedPod(context, device)
+                                RfcommController.disconnectedPod(context, device)
+                            }
+                            else -> {
+                                RfcommController.disconnectedPod(context, device)
+                                MiShuaiRfcommController.disconnectedPod(context, device)
+                            }
                         }
                     }
                 }

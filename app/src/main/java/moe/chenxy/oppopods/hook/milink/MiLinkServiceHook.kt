@@ -158,6 +158,11 @@ object MiLinkServiceHook : HookContext() {
                 currentAnc = oppoAnc
                 sendOppoAnc(oppoAnc, instanceContext)
                 sendAncChanged(oppoAnc, instanceContext)
+                // Directly call RFCOMM controller for MiShuai to bypass broadcast guard
+                val deviceName = runCatching { device.name }.getOrNull().orEmpty()
+                if (DeviceType.detect(deviceName) == DeviceType.MI_SHUAI) {
+                    MiShuaiRfcommController.setANCMode(oppoAnc)
+                }
                 notifyHeadsetPropertyChanged(instance, device, 8)
                 notifyHeadsetPropertyChanged(instance, device, 4)
                 this.result = miLinkAncState()
@@ -304,8 +309,13 @@ object MiLinkServiceHook : HookContext() {
         return if (params?.isConnected == true && params.isCharging) 1 else 0
     }
 
+    private var lastAncSendTime = 0L
+    private const val ANC_SEND_DEBOUNCE_MS = 300L
+
     private fun sendOppoAnc(mode: Int, fallbackContext: Context? = null) {
-        if (mode == currentAnc) return  // Prevent ANC broadcast storm
+        val now = System.currentTimeMillis()
+        if (now - lastAncSendTime < ANC_SEND_DEBOUNCE_MS) return
+        lastAncSendTime = now
         val ctx = fallbackContext ?: context ?: run {
             Log.w(TAG, "sendOppoAnc skipped: context is null mode=$mode")
             return
@@ -322,6 +332,7 @@ object MiLinkServiceHook : HookContext() {
         val ctx = fallbackContext ?: context ?: return
         listOf(BuildConfig.APPLICATION_ID, "com.milink.service", "com.android.settings").forEach { targetPackage ->
             ctx.sendBroadcast(Intent(OppoPodsAction.ACTION_PODS_ANC_CHANGED).apply {
+                currentAddress?.let { putExtra("address", it) }
                 putExtra("status", mode)
                 setPackage(targetPackage)
                 addFlags(Intent.FLAG_RECEIVER_FOREGROUND)

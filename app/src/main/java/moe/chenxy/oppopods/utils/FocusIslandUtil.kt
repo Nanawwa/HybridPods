@@ -20,10 +20,12 @@ object FocusIslandUtil {
     private const val CHANNEL_NAME = "HybridPods Battery"
     private const val NOTIFICATION_ID = 10086
     private const val DISMISS_DELAY_MS = 4000L
+    private const val MIN_SHOW_INTERVAL_MS = 2000L
 
     // Debounce: track last shown battery values
     private var lastLeftBattery = -1
     private var lastRightBattery = -1
+    private var lastShowTime = 0L
 
     fun showBatteryIsland(
         context: Context,
@@ -32,6 +34,9 @@ object FocusIslandUtil {
         address: String,
     ): Boolean {
         try {
+            val now = System.currentTimeMillis()
+            if (now - lastShowTime < MIN_SHOW_INTERVAL_MS) return false
+
             val leftConnected = batteryParams.left?.isConnected == true
             val rightConnected = batteryParams.right?.isConnected == true
 
@@ -126,6 +131,7 @@ object FocusIslandUtil {
                 .build()
 
             nm.notify(NOTIFICATION_ID, notification)
+            lastShowTime = now
 
             Handler(Looper.getMainLooper()).postDelayed({
                 try { nm.cancel(NOTIFICATION_ID) } catch (_: Exception) {}
