@@ -28,7 +28,7 @@ import moe.chenxy.oppopods.pods.detectDeviceCapabilities
 @SuppressLint("MissingPermission")
 object MiBluetoothToastHook : HookContext() {
 
-    // ANC 模式本地缓存，用于循环切换和状态同步（1=�?2=降噪 3=通�?4=自适应�?    // 通过接收 ACTION_PODS_ANC_CHANGED 广播�?RfcommController 保持同步
+    // ANC 模式本地缓存，用于循环切换和状态同步（1=�?2=降噪 3=通�?4=自适应�?    // 通过接收 ACTION_PODS_ANC_CHANGED 广播�?RfcommController 保持同步
     private var localAncMode = 1
 
     override fun onHook() {
@@ -59,16 +59,16 @@ object MiBluetoothToastHook : HookContext() {
 
                 val caseBattStr = if (batteryParams.case != null && batteryParams.case!!.isConnected)
                     "${context.resources.getString(miheadset_notification_Box)}${batteryParams.case!!.battery}%" +
-                            "${if (batteryParams.case!!.isCharging) "�?" else " "}\n"
+                            "${if (batteryParams.case!!.isCharging) "\u26A1" else " "}\n"
                 else ""
                 val leftEar = if (batteryParams.left != null && batteryParams.left!!.isConnected)
                     "${context.resources.getString(miheadset_notification_LeftEar)}${batteryParams.left!!.battery}%" +
-                        (if (batteryParams.left!!.isCharging) "�? else "")
+                        (if (batteryParams.left!!.isCharging) "\u26A1" else "")
                 else ""
                 val leftToRight = if (batteryParams.left?.isConnected == true && batteryParams.right?.isConnected == true) " " else ""
                 val rightEar = if (batteryParams.right != null && batteryParams.right!!.isConnected)
                     "$leftToRight${context.resources.getString(miheadset_notification_RightEar)}${batteryParams.right!!.battery}%" +
-                        (if (batteryParams.right!!.isCharging) "�?" else " ")
+                        (if (batteryParams.right!!.isCharging) "\u26A1" else " ")
                 else ""
 
                 val contentText: String = caseBattStr + leftEar + rightEar
@@ -94,7 +94,7 @@ object MiBluetoothToastHook : HookContext() {
                     context.resources.getString(miheadset_notification_Disconnect),
                     PendingIntent.getBroadcast(context, 0, intent, 201326592)
                 )
-                // 循环切换降噪模式，指�?package 确保广播路由�?com.android.bluetooth 进程
+                // 循环切换降噪模式，指�?package 确保广播路由�?com.android.bluetooth 进程
                 val ancCycleIntent = Intent(OppoPodsAction.ACTION_CYCLE_ANC)
                 ancCycleIntent.setPackage("com.android.bluetooth")
                 ancCycleIntent.setIdentifier("BTHeadset$address")
@@ -261,7 +261,7 @@ object MiBluetoothToastHook : HookContext() {
                                 val device = p1.getParcelableExtra("device", BluetoothDevice::class.java) as BluetoothDevice
                                 cancelNotification(device, context)
                             } else if (p1?.action == OppoPodsAction.ACTION_PODS_ANC_CHANGED) {
-                                // 同步耳机实际 ANC 状态到本地缓存，确保下次循环切换时状态准�?                                localAncMode = p1.getIntExtra("status", 1)
+                                // 同步耳机实际 ANC 状态到本地缓存，确保下次循环切换时状态准�?                                localAncMode = p1.getIntExtra("status", 1)
                             } else if (p1?.action == OppoPodsAction.ACTION_CYCLE_ANC) {
                                 val capabilities = detectDeviceCapabilities(
                                     deviceName = p1.getStringExtra("device_name").orEmpty(),
@@ -292,7 +292,7 @@ object MiBluetoothToastHook : HookContext() {
                     intentFilter.addAction("chen.action.oppopods.updatepodsnotification")
                     intentFilter.addAction("chen.action.oppopods.cancelpodsnotification")
                     intentFilter.addAction(OppoPodsAction.ACTION_CYCLE_ANC)
-                    // 监听耳机实际 ANC 状态变更广播，保持 localAncMode �?RfcommController 同步
+                    // 监听耳机实际 ANC 状态变更广播，保持 localAncMode �?RfcommController 同步
                     intentFilter.addAction(OppoPodsAction.ACTION_PODS_ANC_CHANGED)
                     context.registerReceiver(broadcastReceiver, intentFilter,
                         Context.RECEIVER_EXPORTED)

@@ -351,7 +351,7 @@ object MiShuaiRfcommController {
                     } else {
                         rTimeOut++
                         if (rTimeOut % HEARTBEAT_EVERY == 0) {
-                            // Heartbeat �?re-send current query if idle
+                            // Heartbeat - re-send current query if idle
                             if (pollChainIndex >= MiShuaiPackets.POLL_CHAIN.size) {
                                 pollChainIndex = 0
                             }

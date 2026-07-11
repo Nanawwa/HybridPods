@@ -46,7 +46,8 @@ object FocusIslandUtil {
                 return false
             }
 
-            // 使用 createWithBitmap 直接嵌入图片数据，SystemUI 无需再访问模块资�?            val leftIcon = Icon.createWithBitmap(leftBitmap)
+            // 使用 createWithBitmap 直接嵌入图片数据
+            val leftIcon = Icon.createWithBitmap(leftBitmap)
             val rightIcon = Icon.createWithBitmap(rightBitmap)
 
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
