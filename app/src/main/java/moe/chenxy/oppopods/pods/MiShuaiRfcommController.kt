@@ -69,6 +69,7 @@ object MiShuaiRfcommController {
     private var currentAnc: Int = 1
     private var currentEqPreset: Int = -1
     private var currentWorkMode: Int = MiShuaiPackets.WORK_MODE_MUSIC
+    private var pendingEqPreset: Int = -1  // -1 = no pending EQ set
     private var cachedDeviceName: String = ""
     private var lastKnownCaseBattery: Int = 0
     private var lastKnownCaseCharging: Boolean = false
@@ -427,12 +428,18 @@ object MiShuaiRfcommController {
             }
             MiShuaiPackets.QUERY_EQ -> {
                 val parsed = MiShuaiParser.parseEqMode(packet)
-                Log.i(TAG, "EQ query response: parsed=$parsed, raw=${packet.joinToString(" ") { "%02X".format(it) }}")
-                parsed?.let {
-                    if (it != currentEqPreset) {
-                        Log.i(TAG, "EQ changed: $currentEqPreset -> $it")
-                        currentEqPreset = it
-                        changeUIEqPreset(it)
+                Log.i(TAG, "EQ query response: parsed=$parsed, pending=$pendingEqPreset, raw=${packet.joinToString(" ") { "%02X".format(it) }}")
+                if (pendingEqPreset >= 0) {
+                    // EQ set command pending — ignore poll query response to avoid revert
+                    Log.i(TAG, "EQ query ignored: pendingEqPreset=$pendingEqPreset")
+                    pendingEqPreset = -1  // Clear pending after first query response
+                } else {
+                    parsed?.let {
+                        if (it != currentEqPreset) {
+                            Log.i(TAG, "EQ changed: $currentEqPreset -> $it")
+                            currentEqPreset = it
+                            changeUIEqPreset(it)
+                        }
                     }
                 }
             }
@@ -552,6 +559,7 @@ object MiShuaiRfcommController {
     fun setEqPreset(preset: Int) {
         val packet = MiShuaiPackets.buildSetEq(preset.toByte())
         Log.i(TAG, "setEqPreset: preset=$preset, packet=${packet.joinToString(" ") { "%02X".format(it) }}")
+        pendingEqPreset = preset  // Mark as pending to ignore poll query response
         currentEqPreset = preset
         changeUIEqPreset(preset)
         CoroutineScope(Dispatchers.IO).launch {
