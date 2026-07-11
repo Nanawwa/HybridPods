@@ -29,9 +29,27 @@ fun AboutPage(
     val context = LocalContext.current
 
     fun openUrl(url: String) {
-        Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(url)
-            context.startActivity(this)
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            // Fallback: try with explicit browser package
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                intent.setPackage("com.android.chrome")
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            } catch (e2: Exception) {
+                // Last resort: try any available browser
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    context.startActivity(intent)
+                } catch (_: Exception) {
+                    // Silently fail if no browser available
+                }
+            }
         }
     }
 
