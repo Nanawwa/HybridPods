@@ -65,6 +65,8 @@ object MiShuaiRfcommController {
     private var lastTempBatt = 0
     lateinit var currentBatteryParams: BatteryParams
     private var currentAnc: Int = 1
+    private var currentEqPreset: Int = -1
+    private var currentWorkMode: Int = MiShuaiPackets.WORK_MODE_MUSIC
     private var cachedDeviceName: String = ""
     private var lastKnownCaseBattery: Int = 0
     private var lastKnownCaseCharging: Boolean = false
@@ -135,6 +137,14 @@ object MiShuaiRfcommController {
             }
             OppoPodsAction.ACTION_CYCLE_ANC -> {
                 cycleAnc()
+            }
+            OppoPodsAction.ACTION_EQ_PRESET_SET -> {
+                val preset = intent.getIntExtra("preset", -1)
+                if (preset in MiShuaiPackets.EQ_PRESETS) setEqPreset(preset)
+            }
+            OppoPodsAction.ACTION_GAME_MODE_SET -> {
+                val enabled = intent.getBooleanExtra("enabled", false)
+                setWorkMode(if (enabled) MiShuaiPackets.WORK_MODE_GAME else MiShuaiPackets.WORK_MODE_MUSIC)
             }
         }
     }
@@ -248,6 +258,8 @@ object MiShuaiRfcommController {
                 this.addAction(OppoPodsAction.ACTION_PODS_UI_CLOSED)
                 this.addAction(OppoPodsAction.ACTION_REFRESH_STATUS)
                 this.addAction(OppoPodsAction.ACTION_CYCLE_ANC)
+                this.addAction(OppoPodsAction.ACTION_EQ_PRESET_SET)
+                this.addAction(OppoPodsAction.ACTION_GAME_MODE_SET)
             }, Context.RECEIVER_EXPORTED)
             receiverRegistered = true
         }
@@ -401,6 +413,19 @@ object MiShuaiRfcommController {
             MiShuaiPackets.QUERY_EQ -> {
                 MiShuaiParser.parseEqMode(packet)?.let {
                     Log.d(TAG, "EQ mode: $it")
+                    if (it != currentEqPreset) {
+                        currentEqPreset = it
+                        changeUIEqPreset(it)
+                    }
+                }
+            }
+            MiShuaiPackets.QUERY_WORK_MODE -> {
+                MiShuaiParser.parseWorkMode(packet)?.let {
+                    Log.d(TAG, "Work mode: $it")
+                    if (it != currentWorkMode) {
+                        currentWorkMode = it
+                        changeUIGameModeStatus(it == MiShuaiPackets.WORK_MODE_GAME)
+                    }
                 }
             }
             else -> Log.d(TAG, "Query response subType=0x${subType.toString(16)}")
@@ -500,6 +525,41 @@ object MiShuaiRfcommController {
     }
 
     private fun Int.floorMod(divisor: Int): Int = ((this % divisor) + divisor) % divisor
+
+    // ── EQ control ───────────────────────────────────────────────────
+
+    fun setEqPreset(preset: Int) {
+        Log.d(TAG, "setEqPreset: $preset")
+        currentEqPreset = preset
+        changeUIEqPreset(preset)
+        CoroutineScope(Dispatchers.IO).launch {
+            sendPacketSafe(MiShuaiPackets.buildSetEq(preset.toByte()), "eq preset control")
+        }
+    }
+
+    private fun changeUIEqPreset(preset: Int) {
+        sendAppStatusBroadcast(OppoPodsAction.ACTION_PODS_EQ_PRESET_CHANGED) {
+            putExtra("preset", preset)
+        }
+    }
+
+    // ── WorkMode (game/music) control ─────────────────────────────────
+
+    fun setWorkMode(mode: Int) {
+        Log.d(TAG, "setWorkMode: $mode")
+        currentWorkMode = mode
+        val isGameMode = mode == MiShuaiPackets.WORK_MODE_GAME
+        changeUIGameModeStatus(isGameMode)
+        CoroutineScope(Dispatchers.IO).launch {
+            sendPacketSafe(MiShuaiPackets.buildSetWorkMode(mode.toByte()), "work mode control")
+        }
+    }
+
+    private fun changeUIGameModeStatus(enabled: Boolean) {
+        sendAppStatusBroadcast(OppoPodsAction.ACTION_PODS_GAME_MODE_CHANGED) {
+            putExtra("enabled", enabled)
+        }
+    }
 
     // ── Query ────────────────────────────────────────────────────────
 

@@ -88,11 +88,37 @@ object MiShuaiPackets {
     const val ANC_TRANSPARENCY = 0x02  // 环境音/通透
     const val ANC_OFF = 0x03           // 降噪关
 
+    // ── EQ presets (SoundEffects = 0x20) ────────────────────────────
+
+    const val EQ_HIFI = 0              // HiFi 高保真
+    const val EQ_POP = 1               // POP 流行
+    const val EQ_ROCK = 2              // Rock 摇滚
+    const val EQ_FPS = 3               // FPS 游戏音效
+    const val EQ_LC = 4                // Lc
+    const val EQ_CUSTOM = 5            // Custom 自定义 EQ
+
+    /** All supported EQ preset IDs. */
+    val EQ_PRESETS = intArrayOf(EQ_HIFI, EQ_POP, EQ_ROCK, EQ_FPS, EQ_LC, EQ_CUSTOM)
+
+    // ── WorkMode (game/music mode, WorkMode = 0x25) ─────────────────
+
+    const val WORK_MODE_MUSIC = 0      // 音乐模式
+    const val WORK_MODE_GAME = 1       // 游戏模式
+
     // ── Pre-built command packets ────────────────────────────────────
 
     fun buildSetAnc(mode: Byte): ByteArray = buildCommand(NOISE_CONTROL, mode)
 
-    fun buildSetEq(preset: Byte): ByteArray = buildCommand(SOUND_EFFECTS, preset)
+    fun buildSetEq(preset: Byte): ByteArray {
+        return if (preset == EQ_CUSTOM.toByte()) {
+            // Custom EQ needs 10-byte payload; for now send with zeroed EQ data
+            byteArrayOf(0x00, SOUND_EFFECTS.toByte(), 0x01, 0x00, 0x0C, 0x0A, preset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        } else {
+            buildCommand(SOUND_EFFECTS, preset)
+        }
+    }
+
+    fun buildSetWorkMode(mode: Byte): ByteArray = buildCommand(WORK_MODE, mode)
 
     /** Map MiShuai ANC byte to HyperOS ANC status (1=Off, 2=NC, 3=Transparency). */
     fun mapAncToHyperOs(protocolMode: Int): Int = when (protocolMode) {
