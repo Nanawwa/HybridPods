@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import moe.chenxy.oppopods.R
 import top.yukonga.miuix.kmp.basic.BasicComponent
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.Text
 
 @Composable
 fun AboutPage(
@@ -51,13 +51,13 @@ fun AboutPage(
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
                         text = "HybridPods",
-                        style = MaterialTheme.typography.headlineSmall,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
                         text = stringResource(R.string.about_hybridpods_desc),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp,
+                        color = Color(0xFF888888),
                         modifier = Modifier.padding(top = 4.dp),
                     )
                 }
@@ -75,10 +75,9 @@ fun AboutPage(
                 Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp)) {
                     Text(
                         text = stringResource(R.string.about_lineage_title),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF888888),
                     )
                 }
                 BasicComponent(
@@ -105,10 +104,9 @@ fun AboutPage(
                 Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp)) {
                     Text(
                         text = stringResource(R.string.about_credits_title),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
                         fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF888888),
                     )
                 }
                 BasicComponent(
