@@ -26,7 +26,7 @@ object PodImageLoader {
      */
     private val MI_SHUAI_MODEL_MAP = linkedMapOf(
         // Order matters: longer/more specific keywords first
-        "glaze max" to "m30",
+        "glaze max" to "m8",
         "m3a" to "m3a",
         "m88" to "m88",
         "mp10" to "mp10",
@@ -56,7 +56,7 @@ object PodImageLoader {
         if (modelPrefix == null) {
             // Fallback: any MiShuai device → default m30
             if (name.contains("mi shuai") || name.contains("mishuai")) {
-                return resolveDrawableId(context, "mishuai_m30_black")
+                return resolveDrawableId(context, "mishuai_m8_black")
             }
             return null
         }

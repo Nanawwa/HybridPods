@@ -132,12 +132,27 @@ object MiShuaiParser {
 
     /**
      * Parse EQ mode response (query type 0x04).
-     * MiShuai source code reads bArr[i + 8] — index 8 from packet start.
+     *
+     * Two response formats:
+     * - Preset: 00 27 02 00 04 04 02 00 XX (9 bytes, length=4) → data[8] = preset (0-5)
+     * - Custom: 00 27 02 00 0E 04 0C 0A 05 ... (14+ bytes, length=14) → data[8] = 0x05 (Custom type)
+     *
+     * MiShuai source: r_BlEqMode = bArr[i + 8]
+     * For Custom EQ, the value is 5 (SoundCustom).
      */
     fun parseEqMode(data: ByteArray): Int? {
         if (data.size < 9) return null
         if (!isValidResponse(data)) return null
-        return data[8].toInt() and 0xFF
+        val value = data[8].toInt() and 0xFF
+        // Custom EQ response has length > 4 and value == 5
+        val length = data[4].toInt() and 0xFF
+        return if (length > 4 && value == 5) {
+            // Custom EQ — return 5 as the preset
+            MiShuaiPackets.EQ_CUSTOM
+        } else {
+            // Preset EQ — return the actual value
+            value
+        }
     }
 
     // ── Touch settings parsing ───────────────────────────────────────
