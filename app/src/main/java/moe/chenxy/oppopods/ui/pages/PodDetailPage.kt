@@ -34,6 +34,7 @@ import moe.chenxy.oppopods.pods.NoiseControlMode
 import moe.chenxy.oppopods.pods.WearStatus
 import moe.chenxy.oppopods.ui.components.AncSwitch
 import moe.chenxy.oppopods.ui.components.PodStatus
+import androidx.compose.ui.platform.LocalContext
 import moe.chenxy.oppopods.utils.PodImageLoader
 import moe.chenxy.oppopods.utils.miuiStrongToast.data.BatteryParams
 import top.yukonga.miuix.kmp.basic.Card
@@ -184,20 +185,22 @@ fun PodDetailPage(
 }
 
 @Composable
-private fun rememberPodImagePainter(path: String?, address: String?, prefs: android.content.SharedPreferences?) = remember(path, address) {
-    // Try custom image first
-    path?.let {
-        runCatching { BitmapFactory.decodeFile(it) }
-            .getOrNull()
-            ?.let { bitmap -> BitmapPainter(bitmap.asImageBitmap()) }
-    } ?: run {
-        // Try PodImageLoader (handles MiShuai auto-matching)
-        if (address != null && prefs != null) {
-            val context = LocalContext.current
-            val bitmap = PodImageLoader.loadBoxBitmap(context, prefs, address)
-            bitmap?.let { BitmapPainter(it.asImageBitmap()) }
-        } else null
-    } ?: painterResource(R.drawable.img_box)
+private fun rememberPodImagePainter(path: String?, address: String?, prefs: android.content.SharedPreferences?): androidx.compose.ui.graphics.painter.Painter {
+    val context = LocalContext.current
+    return remember(path, address) {
+        // Try custom image first
+        path?.let {
+            runCatching { BitmapFactory.decodeFile(it) }
+                .getOrNull()
+                ?.let { bitmap -> BitmapPainter(bitmap.asImageBitmap()) }
+        } ?: run {
+            // Try PodImageLoader (handles MiShuai auto-matching)
+            if (address != null && prefs != null) {
+                val bitmap = PodImageLoader.loadBoxBitmap(context, prefs, address)
+                bitmap?.let { BitmapPainter(it.asImageBitmap()) }
+            } else null
+        } ?: painterResource(R.drawable.img_box)
+    }
 }
 
 private fun LazyListScope.podControlItems(
