@@ -19,8 +19,11 @@ object FocusIslandUtil {
     private const val CHANNEL_ID = "HybridPods_focus_island"
     private const val CHANNEL_NAME = "HybridPods Battery"
     private const val NOTIFICATION_ID = 10086
-    private const val ISLAND_TIMEOUT_SECONDS = 3
     private const val DISMISS_DELAY_MS = 4000L
+
+    // Debounce: track last shown battery values
+    private var lastLeftBattery = -1
+    private var lastRightBattery = -1
 
     fun showBatteryIsland(
         context: Context,
@@ -32,11 +35,18 @@ object FocusIslandUtil {
             val leftConnected = batteryParams.left?.isConnected == true
             val rightConnected = batteryParams.right?.isConnected == true
 
-            // Need at least one ear connected
             if (!leftConnected && !rightConnected) return false
 
-            val leftText = if (leftConnected) "${batteryParams.left!!.battery}" else "-"
-            val rightText = if (rightConnected) "${batteryParams.right!!.battery}" else "-"
+            val leftBat = if (leftConnected) batteryParams.left!!.battery else -1
+            val rightBat = if (rightConnected) batteryParams.right!!.battery else -1
+
+            // Debounce: skip if battery values haven't changed
+            if (leftBat == lastLeftBattery && rightBat == lastRightBattery) return false
+            lastLeftBattery = leftBat
+            lastRightBattery = rightBat
+
+            val leftText = if (leftConnected) "$leftBat" else "-"
+            val rightText = if (rightConnected) "$rightBat" else "-"
 
             val leftBitmap = PodImageLoader.loadIslandLeftBitmap(context, prefs, address)
             val rightBitmap = PodImageLoader.loadIslandRightBitmap(context, prefs, address)
