@@ -45,7 +45,7 @@ jobs:
           fi
 
           VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts || echo "unversioned")
-          OUT_NAME="OppoPods-${VERSION_NAME}-release.apk"
+          OUT_NAME="HybridPods-${VERSION_NAME}-release.apk"
 
           BUILD_TOOLS=$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)
 
