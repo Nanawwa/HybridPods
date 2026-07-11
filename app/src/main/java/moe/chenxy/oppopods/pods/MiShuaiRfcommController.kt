@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import moe.chenxy.oppopods.BuildConfig
 import moe.chenxy.oppopods.utils.miuiStrongToast.MiuiStrongToastUtil
 import moe.chenxy.oppopods.utils.miuiStrongToast.MiuiStrongToastUtil.cancelPodsNotificationByMiuiBt
+import moe.chenxy.oppopods.config.PodImagePrefs
 import moe.chenxy.oppopods.utils.miuiStrongToast.data.BatteryParams
 import moe.chenxy.oppopods.utils.miuiStrongToast.data.OppoPodsAction
 import moe.chenxy.oppopods.utils.miuiStrongToast.data.PodParams
@@ -53,6 +54,7 @@ object MiShuaiRfcommController {
     private var socket: BluetoothSocket? = null
     private var mContext: Context? = null
     lateinit var mDevice: BluetoothDevice
+    private lateinit var mPrefs: android.content.SharedPreferences
     private var receiverRegistered = false
 
     private var scanToken: MediaRouter2.ScanToken? = null
@@ -130,7 +132,9 @@ object MiShuaiRfcommController {
             }
             OppoPodsAction.ACTION_ANC_SELECT -> {
                 val status = intent.getIntExtra("status", 0)
-                setANCMode(status)
+                if (status != currentAnc) {
+                    setANCMode(status)
+                }
             }
             OppoPodsAction.ACTION_REFRESH_STATUS -> {
                 queryStatus()
@@ -180,7 +184,7 @@ object MiShuaiRfcommController {
     }
 
     private fun changeUIAncStatus(status: Int) {
-        if (status < 1 || status > 8) return
+        if (status < 1 || status > 9) return
         sendAppStatusBroadcast(OppoPodsAction.ACTION_PODS_ANC_CHANGED) {
             if (::mDevice.isInitialized) this.putExtra("address", mDevice.address)
             this.putExtra("status", status)
@@ -249,6 +253,7 @@ object MiShuaiRfcommController {
         closeSocketOnly()
         mContext = context
         mDevice = device
+        mPrefs = prefs
         cachedDeviceName = device.name ?: ""
 
         if (!receiverRegistered) {
@@ -287,6 +292,14 @@ object MiShuaiRfcommController {
                 reconnectAttempts.set(0)
                 reconnectPending = false
                 Log.d(TAG, "SPP connected! uuid=$MI_SHUAI_SPP_UUID")
+
+                // Store device name for image matching
+                val deviceName = mDevice.name ?: cachedDeviceName
+                if (deviceName.isNotBlank()) {
+                    runCatching {
+                        PodImagePrefs.upsertConnected(mPrefs, null, mDevice.address, deviceName)
+                    }
+                }
 
                 changeUIConnectionState("connecting")
                 startPacketReader(newSocket.inputStream)
@@ -438,15 +451,14 @@ object MiShuaiRfcommController {
 
     private fun handleAncChanged(mode: NoiseControlMode) {
         Log.d(TAG, "ANC mode received: $mode")
-        currentAnc = MiShuaiPackets.mapAncToHyperOs(
-            when (mode) {
-                NoiseControlMode.OFF -> MiShuaiPackets.ANC_OFF
-                NoiseControlMode.NOISE_CANCELLATION -> MiShuaiPackets.ANC_DEEP_ANC
-                NoiseControlMode.TRANSPARENCY -> MiShuaiPackets.ANC_TRANSPARENCY
-                NoiseControlMode.WIND_NR -> MiShuaiPackets.ANC_WIND_NR
-                else -> MiShuaiPackets.ANC_OFF
-            }
-        )
+        // Wind NR (0x00) has no HyperOS equivalent — map directly to status 9
+        currentAnc = when (mode) {
+            NoiseControlMode.WIND_NR -> 9
+            NoiseControlMode.OFF -> 1
+            NoiseControlMode.NOISE_CANCELLATION -> 2
+            NoiseControlMode.TRANSPARENCY -> 3
+            else -> 1
+        }
         changeUIAncStatus(currentAnc)
     }
 

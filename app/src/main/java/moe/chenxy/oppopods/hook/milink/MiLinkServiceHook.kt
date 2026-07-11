@@ -305,6 +305,7 @@ object MiLinkServiceHook : HookContext() {
     }
 
     private fun sendOppoAnc(mode: Int, fallbackContext: Context? = null) {
+        if (mode == currentAnc) return  // Prevent ANC broadcast storm
         val ctx = fallbackContext ?: context ?: run {
             Log.w(TAG, "sendOppoAnc skipped: context is null mode=$mode")
             return

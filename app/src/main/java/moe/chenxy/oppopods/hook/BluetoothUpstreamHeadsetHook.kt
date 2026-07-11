@@ -807,6 +807,7 @@ class BluetoothUpstreamHeadsetHook : HookContext() {
     }
 
     private fun sendOppoAnc(mode: Int) {
+        if (mode == currentAnc) return  // Prevent ANC broadcast storm
         currentAnc = mode
         val ctx = context ?: run {
             Log.w(TAG, "sendOppoAnc skipped: context is null mode=$mode")

@@ -14,6 +14,7 @@ import moe.chenxy.oppopods.BuildConfig
 import moe.chenxy.oppopods.pods.DeviceType
 import moe.chenxy.oppopods.pods.MiShuaiRfcommController
 import moe.chenxy.oppopods.pods.RfcommController
+import moe.chenxy.oppopods.config.PodImagePrefs
 import moe.chenxy.oppopods.utils.SystemApisUtils.setIconVisibility
 import moe.chenxy.oppopods.utils.miuiStrongToast.data.OppoPodsAction
 
@@ -44,6 +45,13 @@ object HeadsetStateDispatcher : HookContext() {
                 if (!isSupportedPod(device)) return@post
 
                 val deviceType = DeviceType.detect(device.name ?: "")
+                // Store device name for image matching
+                val deviceName = device.name ?: ""
+                if (deviceName.isNotBlank()) {
+                    runCatching {
+                        PodImagePrefs.upsertConnected(prefs, null, device.address, deviceName)
+                    }
+                }
                 val statusBarManager = context.getSystemService("statusbar") as StatusBarManager
                 if (currState == BluetoothHeadset.STATE_CONNECTED) {
                     statusBarManager.setIconVisibility("wireless_headset", true)

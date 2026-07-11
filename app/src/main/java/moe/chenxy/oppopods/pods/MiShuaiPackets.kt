@@ -115,16 +115,17 @@ object MiShuaiPackets {
 
     fun buildSetEq(preset: Byte): ByteArray {
         return if (preset == EQ_CUSTOM.toByte()) {
-            // Custom EQ needs 10-byte payload; for now send with zeroed EQ data
+            // Custom EQ: {0, 32, 1, 0, 12, 10, 5, [10 bytes custom eq data]}
             byteArrayOf(0x00, SOUND_EFFECTS.toByte(), 0x01, 0x00, 0x0C, 0x0A, preset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         } else {
-            buildCommand(SOUND_EFFECTS, preset)
+            // Standard EQ: {0, 32, 1, 0, 2, 0, preset} — 7 bytes
+            byteArrayOf(0x00, SOUND_EFFECTS.toByte(), 0x01, 0x00, 0x02, 0x00, preset)
         }
     }
 
     fun buildSetWorkMode(mode: Byte): ByteArray = buildCommand(WORK_MODE, mode)
 
-    /** Map MiShuai ANC byte to HyperOS ANC status (1=Off, 2=NC, 3=Transparency, 4=WindNR). */
+    /** Map MiShuai ANC byte to HyperOS ANC status (1=Off, 2=NC, 3=Transparency, 9=WindNR). */
     fun mapAncToHyperOs(protocolMode: Int): Int = when (protocolMode) {
         ANC_WIND_NR -> 4       // Wind NR (custom status)
         ANC_DEEP_ANC -> 2      // ANC
@@ -138,7 +139,7 @@ object MiShuaiPackets {
         1 -> ANC_OFF.toByte()
         2 -> ANC_DEEP_ANC.toByte()
         3 -> ANC_TRANSPARENCY.toByte()
-        4 -> ANC_WIND_NR.toByte()
+        9 -> ANC_WIND_NR.toByte()
         else -> ANC_OFF.toByte()
     }
 
