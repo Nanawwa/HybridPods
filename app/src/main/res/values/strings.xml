@@ -135,4 +135,14 @@
     <string name="anc_implementation_summary">Auto follows model detection. Manual switch for ANC behavior compatibility.</string>
     <string name="anc_implementation_standard">Standard</string>
     <string name="anc_implementation_compatible">Compatible</string>
+    <!-- About page -->
+    <string name="about_hybridpods_desc">OPPO &amp; MiShuai earbuds support for HyperOS. Based on OppoPods with MiShuai protocol adaptation.</string>
+    <string name="about_lineage_title">Project Lineage</string>
+    <string name="about_oppopods_desc">Enhanced version — this project\'s direct upstream</string>
+    <string name="about_oppopods_orig_desc">Original OPPO earbuds HyperOS integration</string>
+    <string name="about_hyperpods_desc">The original HyperOS earbuds concept by Art_Chen</string>
+    <string name="about_credits_title">Credits</string>
+    <string name="about_miuix_desc">HyperOS-style Compose UI components</string>
+    <string name="about_mishuai_protocol">MiShuai Protocol</string>
+    <string name="about_mishuai_protocol_desc">Based on Frida packet capture + MiShuai App decompilation</string>
 </resources>

@@ -136,4 +136,14 @@
     <string name="anc_implementation_summary">自动时跟随型号检测；部分老耳机降噪/关闭指令相反，可手动切换。</string>
     <string name="anc_implementation_standard">标准</string>
     <string name="anc_implementation_compatible">兼容</string>
+    <!-- 关于页面 -->
+    <string name="about_hybridpods_desc">为 HyperOS 设备提供 OPPO 和咪帅耳机系统级支持。基于 OppoPods 二次开发，新增咪帅协议适配。</string>
+    <string name="about_lineage_title">项目来源</string>
+    <string name="about_oppopods_desc">增强版本 — 本项目的直接上游</string>
+    <string name="about_oppopods_orig_desc">原始 OPPO 耳机 HyperOS 集成项目</string>
+    <string name="about_hyperpods_desc">Art_Chen 创作的 HyperOS 耳机集成概念项目</string>
+    <string name="about_credits_title">鸣谢</string>
+    <string name="about_miuix_desc">HyperOS 风格 Compose UI 组件库</string>
+    <string name="about_mishuai_protocol">咪帅协议</string>
+    <string name="about_mishuai_protocol_desc">基于 Frida 抓包 + 咪帅 App 反编译分析</string>
 </resources>
