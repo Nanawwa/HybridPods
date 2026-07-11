@@ -16,26 +16,65 @@ object PodImageLoader {
     private const val MODULE_PACKAGE = "moe.chenxy.oppopods"
 
     /**
-     * Map MiShuai device name to the corresponding earphone image resource.
-     * Returns null if the device is not a recognized MiShuai model.
+     * MiShuai model mapping table.
+     * Key: device name keyword (lowercase, matched with contains())
+     * Value: drawable resource prefix (image file: mishuai_[prefix]_black.png)
+     *
+     * To add a new model:
+     * 1. Add image file: mishuai_xxx_black.png to drawable-nodpi/
+     * 2. Add one line here: "keyword" to "xxx"
      */
-    fun getMiShuaiImageResId(deviceName: String): Int? {
+    private val MI_SHUAI_MODEL_MAP = linkedMapOf(
+        // Order matters: longer/more specific keywords first
+        "glaze max" to "m30",
+        "m3a" to "m3a",
+        "m88" to "m88",
+        "mp10" to "mp10",
+        "mp12" to "mp12",
+        "mp16" to "mp16",
+        "r3c" to "r3c",
+        "m30" to "m30",
+        "m8" to "m8",
+        "m3" to "m3",
+        "m2" to "m2",
+        "r3" to "r3",
+    )
+
+    private val resourceCache = mutableMapOf<String, Int>()
+
+    /**
+     * Resolve MiShuai device name to image resource ID using convention-based lookup.
+     * Image files follow naming: mishuai_[model]_black.png
+     * Returns null if no matching model found.
+     */
+    fun getMiShuaiImageResId(context: Context, deviceName: String): Int? {
         val name = deviceName.lowercase()
-        return when {
-            name.contains("glaze max") || name.contains("m30") -> R.drawable.mishuai_m30_black
-            name.contains("m3a") -> R.drawable.mishuai_m3a_black
-            name.contains("m88") -> R.drawable.mishuai_m88_black
-            name.contains("mp10") -> R.drawable.mishuai_mp10_black
-            name.contains("mp12") -> R.drawable.mishuai_mp12_black
-            name.contains("mp16") -> R.drawable.mishuai_mp16_black
-            name.contains("m8") -> R.drawable.mishuai_m8_black
-            name.contains("m2") -> R.drawable.mishuai_m2_black
-            name.contains("r3c") -> R.drawable.mishuai_r3c_black
-            name.contains("r3") -> R.drawable.mishuai_r3_black
-            name.contains("m3") -> R.drawable.mishuai_m3_black
-            name.contains("mi shuai") || name.contains("mishuai") -> R.drawable.mishuai_m30_black
-            else -> null
+        val modelPrefix = MI_SHUAI_MODEL_MAP.entries.firstOrNull { (keyword, _) ->
+            name.contains(keyword)
+        }?.value
+
+        if (modelPrefix == null) {
+            // Fallback: any MiShuai device → default m30
+            if (name.contains("mi shuai") || name.contains("mishuai")) {
+                return resolveDrawableId(context, "mishuai_m30_black")
+            }
+            return null
         }
+
+        val resName = "mishuai_${modelPrefix}_black"
+        return resolveDrawableId(context, resName)
+    }
+
+    private fun resolveDrawableId(context: Context, resName: String): Int? {
+        resourceCache[resName]?.let { return it }
+        val moduleContext = runCatching {
+            context.createPackageContext(MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY)
+        }.getOrNull() ?: return null
+        val resId = moduleContext.resources.getIdentifier(resName, "drawable", MODULE_PACKAGE)
+        if (resId != 0) {
+            resourceCache[resName] = resId
+        }
+        return resId.takeIf { it != 0 }
     }
 
     @SuppressLint("MissingPermission")
@@ -69,7 +108,7 @@ object PodImageLoader {
         val deviceName = earphone?.name?.takeIf { it.isNotBlank() }
             ?: resolveDeviceName(context, address)
         if (deviceName.isNotBlank()) {
-            val miShuaiResId = getMiShuaiImageResId(deviceName)
+            val miShuaiResId = getMiShuaiImageResId(context, deviceName)
             if (miShuaiResId != null) {
                 val moduleContext = runCatching {
                     context.createPackageContext(MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY)
@@ -105,7 +144,7 @@ object PodImageLoader {
         val deviceName = earphone?.name?.takeIf { it.isNotBlank() }
             ?: resolveDeviceName(context, address)
         if (deviceName.isNotBlank()) {
-            val miShuaiResId = getMiShuaiImageResId(deviceName)
+            val miShuaiResId = getMiShuaiImageResId(context, deviceName)
             if (miShuaiResId != null) {
                 val moduleContext = runCatching {
                     context.createPackageContext(MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY)
