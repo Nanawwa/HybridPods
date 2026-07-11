@@ -109,7 +109,7 @@ private fun BatteryColumn(
     val displayLevel = if (isConnected) "$level%" else "-"
     val iconLevel = if (isConnected) level else lastKnownLevel
 
-    // Pad short labels (左/右) to match width of longest label (耳机盒) using ideographic spaces
+    // Pad short labels (�?�? to match width of longest label (耳机�? using ideographic spaces
     val paddedLabel = if (label.length < 3) label.padEnd(3, '\u3000') else label
 
     Box(

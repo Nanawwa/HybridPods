@@ -13,7 +13,7 @@ data class MelodyImageCandidate(
 )
 
 object RootManager {
-    private const val TAG = "OppoPods-MelodyImport"
+    private const val TAG = "HybridPods-MelodyImport"
     private val packageNameRegex = Regex("^[A-Za-z0-9_.]+$")
     private val melodyImagePathRegex = Regex(
         "^/(data/(data|user/\\d+|user_de/\\d+)|data_mirror/data_(ce|de)/null/\\d+)/com\\.heytap\\.headset/files/melody-model-download/control_[A-Za-z0-9_-]+/res/image/img_(detail|left|right)\\.png$"

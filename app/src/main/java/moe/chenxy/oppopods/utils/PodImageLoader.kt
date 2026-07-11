@@ -24,7 +24,7 @@ object PodImageLoader {
             earphone?.imageUri(resource)?.let { uri -> decodeUri(context, uri) }
         }.getOrNull()
         if (custom != null) {
-            //android.util.Log.d("OppoPods-PodImage", "loaded custom $resource for ${earphone?.address}")
+            //android.util.Log.d("HybridPods-PodImage", "loaded custom $resource for ${earphone?.address}")
             return custom
         }
 
@@ -48,7 +48,7 @@ object PodImageLoader {
                 ?: earphone?.imageUri(customFallbackResource)?.let { uri -> decodeUri(context, uri) }
         }.getOrNull()
         if (custom != null) {
-            //android.util.Log.d("OppoPods-PodImage", "loaded custom $resource for ${earphone?.address}")
+            //android.util.Log.d("HybridPods-PodImage", "loaded custom $resource for ${earphone?.address}")
             return custom
         }
 

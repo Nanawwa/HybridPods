@@ -80,8 +80,7 @@ fun AncSwitch(
                 modifier = Modifier.weight(1f),
                 compact = compact
             )
-            // Adaptive模式按钮：仅当设置中启用Adaptive模式时显示
-            if (adaptiveModeEnabled) {
+            // Adaptive模式按钮：仅当设置中启用Adaptive模式时显�?            if (adaptiveModeEnabled) {
                 AncButton(
                     offIconRes = R.drawable.ic_adaptive_off,
                     onIconRes = R.drawable.ic_adaptive_on,

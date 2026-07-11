@@ -19,7 +19,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "moe.chenxy.oppopods"
+        applicationId = "moe.chenxy.hybridpods"
         minSdk = 35
         targetSdk = 36
         versionCode = 15

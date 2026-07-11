@@ -15,9 +15,9 @@ import moe.chenxy.oppopods.utils.miuiStrongToast.data.BatteryParams
 
 @SuppressLint("WrongConstant")
 object FocusIslandUtil {
-    private const val TAG = "OppoPods-FocusIsland"
-    private const val CHANNEL_ID = "oppopods_focus_island"
-    private const val CHANNEL_NAME = "OppoPods Battery"
+    private const val TAG = "HybridPods-FocusIsland"
+    private const val CHANNEL_ID = "HybridPods_focus_island"
+    private const val CHANNEL_NAME = "HybridPods Battery"
     private const val NOTIFICATION_ID = 10086
     private const val ISLAND_TIMEOUT_SECONDS = 3
     private const val DISMISS_DELAY_MS = 4000L
@@ -46,8 +46,7 @@ object FocusIslandUtil {
                 return false
             }
 
-            // 使用 createWithBitmap 直接嵌入图片数据，SystemUI 无需再访问模块资源
-            val leftIcon = Icon.createWithBitmap(leftBitmap)
+            // 使用 createWithBitmap 直接嵌入图片数据，SystemUI 无需再访问模块资�?            val leftIcon = Icon.createWithBitmap(leftBitmap)
             val rightIcon = Icon.createWithBitmap(rightBitmap)
 
             val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -69,7 +68,7 @@ object FocusIslandUtil {
                 val picRight = createPicture("key_pic_right", rightIcon)
 
                 enableFloat = true
-                ticker = "OppoPods"
+                ticker = "HybridPods"
                 tickerPic = picLeft
 
                 isShowNotification = false
@@ -100,7 +99,7 @@ object FocusIslandUtil {
                         }
                     }
                     shareData {
-                        title = "OppoPods"
+                        title = "HybridPods"
                         content = contentText
                         shareContent = contentText
                     }
@@ -109,9 +108,9 @@ object FocusIslandUtil {
 
             val notification = Notification.Builder(context, CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.stat_sys_data_bluetooth)
-                .setContentTitle("OppoPods")
+                .setContentTitle("HybridPods")
                 .setContentText(contentText)
-                .setTicker("OppoPods")
+                .setTicker("HybridPods")
                 .addExtras(extras)
                 .build()
 

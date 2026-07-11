@@ -28,8 +28,7 @@ import moe.chenxy.oppopods.pods.detectDeviceCapabilities
 @SuppressLint("MissingPermission")
 object MiBluetoothToastHook : HookContext() {
 
-    // ANC 模式本地缓存，用于循环切换和状态同步（1=关 2=降噪 3=通透 4=自适应）
-    // 通过接收 ACTION_PODS_ANC_CHANGED 广播与 RfcommController 保持同步
+    // ANC 模式本地缓存，用于循环切换和状态同步（1=�?2=降噪 3=通�?4=自适应�?    // 通过接收 ACTION_PODS_ANC_CHANGED 广播�?RfcommController 保持同步
     private var localAncMode = 1
 
     override fun onHook() {
@@ -48,7 +47,7 @@ object MiBluetoothToastHook : HookContext() {
             val miheadset_notification_Disconnect = context.resources.getIdentifier("miheadset_notification_Disconnect", "string", "com.xiaomi.bluetooth")
             val system_notification_accent_color = context.resources.getIdentifier("system_notification_accent_color", "color", "android")
             if (bluetoothDevice == null) {
-                Log.e("OppoPods", "createPodsNotification: btDevice null")
+                Log.e("HybridPods", "createPodsNotification: btDevice null")
                 return
             }
             try {
@@ -60,16 +59,16 @@ object MiBluetoothToastHook : HookContext() {
 
                 val caseBattStr = if (batteryParams.case != null && batteryParams.case!!.isConnected)
                     "${context.resources.getString(miheadset_notification_Box)}${batteryParams.case!!.battery}%" +
-                            "${if (batteryParams.case!!.isCharging) "⚡ " else " "}\n"
+                            "${if (batteryParams.case!!.isCharging) "�?" else " "}\n"
                 else ""
                 val leftEar = if (batteryParams.left != null && batteryParams.left!!.isConnected)
                     "${context.resources.getString(miheadset_notification_LeftEar)}${batteryParams.left!!.battery}%" +
-                        (if (batteryParams.left!!.isCharging) "⚡" else "")
+                        (if (batteryParams.left!!.isCharging) "�? else "")
                 else ""
                 val leftToRight = if (batteryParams.left?.isConnected == true && batteryParams.right?.isConnected == true) " " else ""
                 val rightEar = if (batteryParams.right != null && batteryParams.right!!.isConnected)
                     "$leftToRight${context.resources.getString(miheadset_notification_RightEar)}${batteryParams.right!!.battery}%" +
-                        (if (batteryParams.right!!.isCharging) "⚡ " else " ")
+                        (if (batteryParams.right!!.isCharging) "�?" else " ")
                 else ""
 
                 val contentText: String = caseBattStr + leftEar + rightEar
@@ -95,7 +94,7 @@ object MiBluetoothToastHook : HookContext() {
                     context.resources.getString(miheadset_notification_Disconnect),
                     PendingIntent.getBroadcast(context, 0, intent, 201326592)
                 )
-                // 循环切换降噪模式，指定 package 确保广播路由到 com.android.bluetooth 进程
+                // 循环切换降噪模式，指�?package 确保广播路由�?com.android.bluetooth 进程
                 val ancCycleIntent = Intent(OppoPodsAction.ACTION_CYCLE_ANC)
                 ancCycleIntent.setPackage("com.android.bluetooth")
                 ancCycleIntent.setIdentifier("BTHeadset$address")
@@ -106,7 +105,7 @@ object MiBluetoothToastHook : HookContext() {
                 val headsetBitmap = PodImageLoader.loadBoxBitmap(context, prefs, address)
                     ?: BitmapFactory.decodeResource(moduleContext.resources, R.drawable.img_box)
                 if (headsetBitmap == null) {
-                    Log.e("OppoPods", "createPodsNotification: headset bitmap null")
+                    Log.e("HybridPods", "createPodsNotification: headset bitmap null")
                     return
                 }
                 val headsetIcon = Icon.createWithBitmap(headsetBitmap)
@@ -223,7 +222,7 @@ object MiBluetoothToastHook : HookContext() {
                     SystemApisUtils.getUserAllUserHandle()
                 )
             } catch (e: Exception) {
-                Log.e("OppoPods", "Failed to create Pod Notification", e)
+                Log.e("HybridPods", "Failed to create Pod Notification", e)
             }
         }
 
@@ -235,7 +234,7 @@ object MiBluetoothToastHook : HookContext() {
                     notificationManager.cancelAsUser("BTHeadset$address", 10003, SystemApisUtils.getUserAllUserHandle())
                 }
             } catch (e: Exception) {
-                Log.e("OppoPods", "Failed to cancel Pod Notification!", e)
+                Log.e("HybridPods", "Failed to cancel Pod Notification!", e)
             }
         }
 
@@ -247,7 +246,7 @@ object MiBluetoothToastHook : HookContext() {
                         override fun onReceive(p0: Context?, p1: Intent?) {
                             if (p1?.action == "chen.action.oppopods.sendstrongtoast") {
                                 if (ConfigManager.islandMode() != ConfigManager.ISLAND_MODE_MODULE) {
-                                    Log.d("OppoPods", "skip module island mode=${ConfigManager.islandMode()}")
+                                    Log.d("HybridPods", "skip module island mode=${ConfigManager.islandMode()}")
                                     return
                                 }
                                 val batteryParams = p1.getParcelableExtra("batteryParams", BatteryParams::class.java)!!
@@ -262,8 +261,7 @@ object MiBluetoothToastHook : HookContext() {
                                 val device = p1.getParcelableExtra("device", BluetoothDevice::class.java) as BluetoothDevice
                                 cancelNotification(device, context)
                             } else if (p1?.action == OppoPodsAction.ACTION_PODS_ANC_CHANGED) {
-                                // 同步耳机实际 ANC 状态到本地缓存，确保下次循环切换时状态准确
-                                localAncMode = p1.getIntExtra("status", 1)
+                                // 同步耳机实际 ANC 状态到本地缓存，确保下次循环切换时状态准�?                                localAncMode = p1.getIntExtra("status", 1)
                             } else if (p1?.action == OppoPodsAction.ACTION_CYCLE_ANC) {
                                 val capabilities = detectDeviceCapabilities(
                                     deviceName = p1.getStringExtra("device_name").orEmpty(),
@@ -294,7 +292,7 @@ object MiBluetoothToastHook : HookContext() {
                     intentFilter.addAction("chen.action.oppopods.updatepodsnotification")
                     intentFilter.addAction("chen.action.oppopods.cancelpodsnotification")
                     intentFilter.addAction(OppoPodsAction.ACTION_CYCLE_ANC)
-                    // 监听耳机实际 ANC 状态变更广播，保持 localAncMode 与 RfcommController 同步
+                    // 监听耳机实际 ANC 状态变更广播，保持 localAncMode �?RfcommController 同步
                     intentFilter.addAction(OppoPodsAction.ACTION_PODS_ANC_CHANGED)
                     context.registerReceiver(broadcastReceiver, intentFilter,
                         Context.RECEIVER_EXPORTED)

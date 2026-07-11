@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 @SuppressLint("MissingPermission", "StaticFieldLeak")
 object RfcommController {
-    private const val TAG = "OppoPods-RfcommController"
+    private const val TAG = "HybridPods-RfcommController"
     private const val AUTO_RECONNECT_DELAY_MS = 120_000L
     private const val APP_UI_ACTIVE_TIMEOUT_MS = 75_000L
 

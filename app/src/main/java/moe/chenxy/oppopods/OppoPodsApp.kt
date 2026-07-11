@@ -31,7 +31,7 @@ class OppoPodsApp : Application(), XposedServiceHelper.OnServiceListener {
     }
 
     companion object {
-        private const val TAG = "OppoPods-App"
+        private const val TAG = "HybridPods-App"
 
         @Volatile
         var xposedService: XposedService? = null

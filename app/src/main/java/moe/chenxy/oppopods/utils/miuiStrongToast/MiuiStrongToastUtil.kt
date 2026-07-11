@@ -51,7 +51,7 @@ object MiuiStrongToastUtil {
                 "setStatus", Int::class.javaPrimitiveType, String::class.java, Bundle::class.java
             ).invoke(service, 1, "strong_toast_action", bundle)
         } catch (e: Exception) {
-            Log.e("OppoPods", "Failed to show HyperOS String Toast")
+            Log.e("HybridPods", "Failed to show HyperOS String Toast")
         }
     }
 
@@ -95,7 +95,7 @@ object MiuiStrongToastUtil {
             ).invoke(service, 1, "strong_toast_action", bundle)
             lastPodsTimestamp = System.currentTimeMillis()
         } catch (_: Exception) {
-            Log.e("OppoPods", "Failed to show Pods Battery Toast")
+            Log.e("HybridPods", "Failed to show Pods Battery Toast")
         }
     }
 

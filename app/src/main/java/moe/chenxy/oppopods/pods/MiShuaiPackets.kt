@@ -28,20 +28,20 @@ object MiShuaiPackets {
 
     // ── Control type constants (frame header byte 2) ─────────────────
 
-    const val NOISE_CONTROL = 0x2C        // 44 — ANC mode set
-    const val SOUND_EFFECTS = 0x20        // 32 — EQ set
-    const val WORK_MODE = 0x25            // 37 — work mode set
-    const val AUDIO_PROTOCOL = 0x2B       // 43 — audio protocol set
-    const val BL_LANGUAGE = 0x29          // 41 — language set
-    const val BL_ALERT_VOLUME = 0x32      // 50 — alert volume set
-    const val BL_TOUCH_SWITCH = 0x33      // 51 — touch switch set
-    const val BL_FINDER = 0x2A            // 42 — finder set
-    const val BL_ANC_MODE_SWITCH = 0x21   // 33 — ANC mode switch set
-    const val TOUCH_SETTINGS = 0x22       // 34 — touch settings set
-    const val BL_POWER_OFF = 0x23         // 35 — power off
-    const val BL_RESET = 0x24             // 36 — factory reset
-    const val CLEAR_PAIR = 0x30           // 47 — clear pair
-    const val GET_BL_INFO = 0x27          // 39 — query (all sub-types)
+    const val NOISE_CONTROL = 0x2C        // 44 �?ANC mode set
+    const val SOUND_EFFECTS = 0x20        // 32 �?EQ set
+    const val WORK_MODE = 0x25            // 37 �?work mode set
+    const val AUDIO_PROTOCOL = 0x2B       // 43 �?audio protocol set
+    const val BL_LANGUAGE = 0x29          // 41 �?language set
+    const val BL_ALERT_VOLUME = 0x32      // 50 �?alert volume set
+    const val BL_TOUCH_SWITCH = 0x33      // 51 �?touch switch set
+    const val BL_FINDER = 0x2A            // 42 �?finder set
+    const val BL_ANC_MODE_SWITCH = 0x21   // 33 �?ANC mode switch set
+    const val TOUCH_SETTINGS = 0x22       // 34 �?touch settings set
+    const val BL_POWER_OFF = 0x23         // 35 �?power off
+    const val BL_RESET = 0x24             // 36 �?factory reset
+    const val CLEAR_PAIR = 0x30           // 47 �?clear pair
+    const val GET_BL_INFO = 0x27          // 39 �?query (all sub-types)
 
     // ── Query sub-types ──────────────────────────────────────────────
 
@@ -61,9 +61,8 @@ object MiShuaiPackets {
     const val QUERY_FULL = 0xFF
 
     // ── Full poll chain order ────────────────────────────────────────
-    // 1→2→3→4→5→8→10→12→19→22→11→7→20
-    // Battery→Firmware→Name→EQ→Touch→WorkMode→Language→NoiseDetail→
-    // AlertVol→TouchSwitch→AudioProtocol→AncSwitch→Finder
+    // 1�?�?�?�?�?�?0�?2�?9�?2�?1�?�?0
+    // Battery→Firmware→Name→EQ→Touch→WorkMode→Language→NoiseDetail�?    // AlertVol→TouchSwitch→AudioProtocol→AncSwitch→Finder
 
     val POLL_CHAIN = intArrayOf(
         QUERY_BATTERY,          // 1
@@ -85,17 +84,14 @@ object MiShuaiPackets {
 
     const val ANC_WIND_NR = 0x00       // 抗风降噪
     const val ANC_DEEP_ANC = 0x01      // 深度降噪
-    const val ANC_TRANSPARENCY = 0x02  // 环境音/通透
-    const val ANC_OFF = 0x03           // 降噪关
-
+    const val ANC_TRANSPARENCY = 0x02  // 环境�?通�?    const val ANC_OFF = 0x03           // 降噪�?
     // ── EQ presets (SoundEffects = 0x20) ────────────────────────────
 
-    const val EQ_HIFI = 0              // HiFi 高保真
-    const val EQ_POP = 1               // POP 流行
+    const val EQ_HIFI = 0              // HiFi 高保�?    const val EQ_POP = 1               // POP 流行
     const val EQ_ROCK = 2              // Rock 摇滚
     const val EQ_FPS = 3               // FPS 游戏音效
     const val EQ_LC = 4                // Lc
-    const val EQ_CUSTOM = 5            // Custom 自定义 EQ
+    const val EQ_CUSTOM = 5            // Custom 自定�?EQ
 
     /** All supported EQ preset IDs. */
     val EQ_PRESETS = intArrayOf(EQ_HIFI, EQ_POP, EQ_ROCK, EQ_FPS, EQ_LC, EQ_CUSTOM)
@@ -120,9 +116,9 @@ object MiShuaiPackets {
 
     fun buildSetWorkMode(mode: Byte): ByteArray = buildCommand(WORK_MODE, mode)
 
-    /** Map MiShuai ANC byte to HyperOS ANC status (1=Off, 2=NC, 3=Transparency). */
+    /** Map MiShuai ANC byte to HyperOS ANC status (1=Off, 2=NC, 3=Transparency, 4=WindNR). */
     fun mapAncToHyperOs(protocolMode: Int): Int = when (protocolMode) {
-        ANC_WIND_NR -> 1       // Off
+        ANC_WIND_NR -> 4       // Wind NR (custom status)
         ANC_DEEP_ANC -> 2      // ANC
         ANC_TRANSPARENCY -> 3  // Transparency
         ANC_OFF -> 1           // Off
@@ -134,6 +130,7 @@ object MiShuaiPackets {
         1 -> ANC_OFF.toByte()
         2 -> ANC_DEEP_ANC.toByte()
         3 -> ANC_TRANSPARENCY.toByte()
+        4 -> ANC_WIND_NR.toByte()
         else -> ANC_OFF.toByte()
     }
 

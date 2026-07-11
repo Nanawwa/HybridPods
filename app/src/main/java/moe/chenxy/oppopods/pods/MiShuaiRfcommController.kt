@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger
  */
 @SuppressLint("MissingPermission", "StaticFieldLeak")
 object MiShuaiRfcommController {
-    private const val TAG = "OppoPods-MiShuaiRfcomm"
+    private const val TAG = "HybridPods-MiShuaiRfcomm"
     private const val AUTO_RECONNECT_DELAY_MS = 120_000L
     private const val POLL_INTERVAL_MS = 50L       // 50ms poll interval
     private const val HEARTBEAT_EVERY = 5          // heartbeat every 5 polls = 250ms
@@ -351,7 +351,7 @@ object MiShuaiRfcommController {
                     } else {
                         rTimeOut++
                         if (rTimeOut % HEARTBEAT_EVERY == 0) {
-                            // Heartbeat — re-send current query if idle
+                            // Heartbeat �?re-send current query if idle
                             if (pollChainIndex >= MiShuaiPackets.POLL_CHAIN.size) {
                                 pollChainIndex = 0
                             }
@@ -518,7 +518,7 @@ object MiShuaiRfcommController {
     }
 
     fun cycleAnc() {
-        val cycle = listOf(2, 3, 1)  // NC → Transparency → Off
+        val cycle = listOf(4, 2, 3, 1)  // WindNR -> DeepANC -> Transparency -> Off
         val currentIndex = cycle.indexOf(currentAnc)
         val next = cycle[(currentIndex + 1).floorMod(cycle.size)]
         setANCMode(next)
@@ -550,8 +550,11 @@ object MiShuaiRfcommController {
         currentWorkMode = mode
         val isGameMode = mode == MiShuaiPackets.WORK_MODE_GAME
         changeUIGameModeStatus(isGameMode)
+        // Send directly, bypass command queue to avoid blocking by higher-priority commands
         CoroutineScope(Dispatchers.IO).launch {
-            sendPacketSafe(MiShuaiPackets.buildSetWorkMode(mode.toByte()), "work mode control")
+            val packet = MiShuaiPackets.buildSetWorkMode(mode.toByte())
+            Log.d(TAG, "WorkMode packet: ${packet.joinToString(" ") { "%02X".format(it) }}")
+            sendPacketSafe(packet, "work mode control")
         }
     }
 

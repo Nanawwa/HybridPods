@@ -23,8 +23,8 @@ import moe.chenxy.oppopods.utils.miuiStrongToast.data.PodParams
 
 @SuppressLint("MissingPermission")
 object MiLinkServiceHook : HookContext() {
-    internal const val TAG = "OppoPods-MiLink"
-    private const val PREFS_NAME = "oppopods_milink_state"
+    internal const val TAG = "HybridPods-MiLink"
+    private const val PREFS_NAME = "HybridPods_milink_state"
     private val knownDeviceAddresses = linkedSetOf<String>()
     internal var context: Context? = null
     private var receiverRegistered = false

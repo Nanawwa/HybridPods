@@ -244,7 +244,7 @@ fun SettingsPage(
             Card(modifier = Modifier.padding(top = 12.dp)) {
                 BasicComponent(
                     title = stringResource(R.string.about),
-                    summary = "OppoPods-Enhanced",
+                    summary = "HybridPods-Enhanced",
                     onClick = onOpenAbout
                 )
             }

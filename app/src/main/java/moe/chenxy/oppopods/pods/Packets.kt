@@ -830,7 +830,7 @@ object NotificationSupportParser {
  *
  * Payload shape: `03 <key> 01 <bitmap bytes>`. The bitmap uses the same bit
  * positions as the SET command: bit 4 = 深度, 5 = 中度, 6 = 轻度. Key 0x01
- * (the user-selected mode) is ignored here — that already flows through
+ * (the user-selected mode) is ignored here �?that already flows through
  * [AncModeParser].
  */
 object SmartAncLevelParser {

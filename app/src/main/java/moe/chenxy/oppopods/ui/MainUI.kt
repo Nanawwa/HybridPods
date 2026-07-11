@@ -186,7 +186,7 @@ fun MainUI(
 
     LaunchedEffect(displayTitle, displayCapabilities) {
         Log.i(
-            "OppoPods",
+            "HybridPods",
             "capability check: deviceName='$displayTitle', adaptive=${displayCapabilities.adaptiveSupported}, spatial=${displayCapabilities.spatialAudioSupported}, spatialSoundSwitch=${displayCapabilities.spatialSoundSwitchSupported}"
         )
     }
@@ -302,7 +302,7 @@ fun MainUI(
                             hasAppliedDefaultTab = true
                             pendingOpenEarphonesAfterPickerLoaded = true
                         }
-                        Log.i("OppoPods", "pod connected via hook: $deviceName")
+                        Log.i("HybridPods", "pod connected via hook: $deviceName")
                     }
 
                     OppoPodsAction.ACTION_PODS_CONNECTION_STATE_CHANGED -> {

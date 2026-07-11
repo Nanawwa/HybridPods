@@ -26,7 +26,7 @@ object HeadsetStateDispatcher : HookContext() {
                 registerAppRequestReceiver(instance as? Context)
             }
         }.onFailure {
-            Log.w("OppoPods", "AdapterService.onCreate hook skipped", it)
+            Log.w("HybridPods", "AdapterService.onCreate hook skipped", it)
         }
 
         hookAfter(findMethodByParamCount("com.android.bluetooth.a2dp.A2dpService", "handleConnectionStateChanged", 3)) {
@@ -38,7 +38,7 @@ object HeadsetStateDispatcher : HookContext() {
                 return@hookAfter
             }
             handler.post {
-                Log.d("OppoPods", "A2DP Connection State: $currState, isSupportedPod ${isSupportedPod(device)}")
+                Log.d("HybridPods", "A2DP Connection State: $currState, isSupportedPod ${isSupportedPod(device)}")
                 val context = instance as ContextWrapper
                 registerAppRequestReceiver(context)
                 if (!isSupportedPod(device)) return@post
@@ -77,7 +77,7 @@ object HeadsetStateDispatcher : HookContext() {
                     }
                     OppoPodsAction.ACTION_CONNECT_POD_REQUEST -> {
                         val device = intent.getParcelableExtra("device", BluetoothDevice::class.java) ?: return
-                        Log.d("OppoPods", "connect request from app device=${device.name}/${device.address}")
+                        Log.d("HybridPods", "connect request from app device=${device.name}/${device.address}")
                         val deviceType = DeviceType.detect(device.name ?: "")
                         when (deviceType) {
                             DeviceType.MI_SHUAI -> MiShuaiRfcommController.connectPod(context, device, prefs, appRequested = true)
@@ -86,7 +86,7 @@ object HeadsetStateDispatcher : HookContext() {
                     }
                     OppoPodsAction.ACTION_DISCONNECT_POD_REQUEST -> {
                         val device = intent.getParcelableExtra("device", BluetoothDevice::class.java) ?: return
-                        Log.d("OppoPods", "disconnect request from app device=${device.name}/${device.address}")
+                        Log.d("HybridPods", "disconnect request from app device=${device.name}/${device.address}")
                         val deviceType = DeviceType.detect(device.name ?: "")
                         when (deviceType) {
                             DeviceType.MI_SHUAI -> MiShuaiRfcommController.disconnectedPod(context, device)
