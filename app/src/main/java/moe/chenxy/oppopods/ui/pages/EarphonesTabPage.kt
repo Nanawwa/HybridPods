@@ -56,6 +56,9 @@ internal fun EarphonesTabPage(
         label = "EarphonesPageAnim",
     ) { detailVisible ->
         if (detailVisible) {
+            val isMiShuaiDevice = displayTitle.contains("mi shuai", ignoreCase = true) ||
+                    displayTitle.contains("mishuai", ignoreCase = true)
+
             PodDetailPage(
                 modifier = Modifier
                     .overScrollVertical()
@@ -68,6 +71,7 @@ internal fun EarphonesTabPage(
                 ancMode = displayAnc,
                 onAncModeChange = onAncModeChange,
                 smartAncLevel = smartAncLevel,
+                isMiShuaiDevice = isMiShuaiDevice,
                 transparencyVocalEnhancement = displayTransparencyVocalEnhancement,
                 onTransparencyVocalEnhancementChange = onTransparencyVocalEnhancementChange,
                 gameMode = displayGameMode,

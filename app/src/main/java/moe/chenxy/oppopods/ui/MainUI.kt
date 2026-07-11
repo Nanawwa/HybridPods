@@ -237,6 +237,7 @@ fun MainUI(
                             6 -> NoiseControlMode.NOISE_CANCELLATION_LIGHT
                             7 -> NoiseControlMode.NOISE_CANCELLATION_MEDIUM
                             8 -> NoiseControlMode.NOISE_CANCELLATION_DEEP
+                            9 -> NoiseControlMode.WIND_NR
                             else -> NoiseControlMode.OFF
                         }
                     }

@@ -400,6 +400,7 @@ object MiShuaiRfcommController {
         }
 
         val responseType = MiShuaiParser.getResponseType(packet)
+        Log.i(TAG, "Packet received: type=0x${responseType.toString(16)}, raw=${packet.joinToString(" ") { "%02X".format(it) }}")
 
         when (responseType) {
             MiShuaiPackets.GET_BL_INFO -> handleQueryResponse(packet)
@@ -410,6 +411,7 @@ object MiShuaiRfcommController {
 
     private fun handleQueryResponse(packet: ByteArray) {
         val subType = MiShuaiParser.getSubType(packet)
+        Log.i(TAG, "Query response: subType=0x${subType.toString(16)}")
         when (subType) {
             MiShuaiPackets.QUERY_BATTERY -> {
                 MiShuaiParser.parseBattery(packet)?.let { handleBatteryChanged(it) }
@@ -424,9 +426,11 @@ object MiShuaiRfcommController {
                 }
             }
             MiShuaiPackets.QUERY_EQ -> {
-                MiShuaiParser.parseEqMode(packet)?.let {
-                    Log.d(TAG, "EQ mode: $it")
+                val parsed = MiShuaiParser.parseEqMode(packet)
+                Log.i(TAG, "EQ query response: parsed=$parsed, raw=${packet.joinToString(" ") { "%02X".format(it) }}")
+                parsed?.let {
                     if (it != currentEqPreset) {
+                        Log.i(TAG, "EQ changed: $currentEqPreset -> $it")
                         currentEqPreset = it
                         changeUIEqPreset(it)
                     }
@@ -446,11 +450,13 @@ object MiShuaiRfcommController {
     }
 
     private fun handleAncResponse(packet: ByteArray) {
-        MiShuaiParser.parseAncMode(packet)?.let { handleAncChanged(it) }
+        val parsed = MiShuaiParser.parseAncMode(packet)
+        Log.i(TAG, "ANC response: parsed=$parsed, raw=${packet.joinToString(" ") { "%02X".format(it) }}")
+        parsed?.let { handleAncChanged(it) }
     }
 
     private fun handleAncChanged(mode: NoiseControlMode) {
-        Log.d(TAG, "ANC mode received: $mode")
+        Log.i(TAG, "ANC mode received: $mode (class=${mode::class.simpleName})")
         // Wind NR (0x00) has no HyperOS equivalent — map directly to status 9
         currentAnc = when (mode) {
             NoiseControlMode.WIND_NR -> 9
@@ -459,6 +465,7 @@ object MiShuaiRfcommController {
             NoiseControlMode.TRANSPARENCY -> 3
             else -> 1
         }
+        Log.i(TAG, "ANC mapped to status: $currentAnc")
         changeUIAncStatus(currentAnc)
     }
 
@@ -521,9 +528,10 @@ object MiShuaiRfcommController {
     // ── ANC control ──────────────────────────────────────────────────
 
     fun setANCMode(mode: Int) {
-        Log.d(TAG, "setANCMode: $mode")
+        Log.i(TAG, "setANCMode: $mode, currentAnc=$currentAnc")
         currentAnc = mode
         val protocolMode = MiShuaiPackets.mapAncFromHyperOs(mode)
+        Log.i(TAG, "setANCMode: protocolMode=0x${(protocolMode.toInt() and 0xFF).toString(16)}, packet=${MiShuaiPackets.buildSetAnc(protocolMode).joinToString(" ") { "%02X".format(it) }}")
         CoroutineScope(Dispatchers.IO).launch {
             sendPacketSafe(MiShuaiPackets.buildSetAnc(protocolMode), "anc control")
         }
@@ -542,11 +550,12 @@ object MiShuaiRfcommController {
     // ── EQ control ───────────────────────────────────────────────────
 
     fun setEqPreset(preset: Int) {
-        Log.d(TAG, "setEqPreset: $preset")
+        val packet = MiShuaiPackets.buildSetEq(preset.toByte())
+        Log.i(TAG, "setEqPreset: preset=$preset, packet=${packet.joinToString(" ") { "%02X".format(it) }}")
         currentEqPreset = preset
         changeUIEqPreset(preset)
         CoroutineScope(Dispatchers.IO).launch {
-            sendPacketSafe(MiShuaiPackets.buildSetEq(preset.toByte()), "eq preset control")
+            sendPacketSafe(packet, "eq preset control")
         }
     }
 

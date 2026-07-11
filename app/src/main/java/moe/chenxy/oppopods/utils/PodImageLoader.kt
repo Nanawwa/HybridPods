@@ -104,29 +104,41 @@ object PodImageLoader {
         fallbackResId: Int,
     ): Bitmap? {
         val earphone = runCatching { PodImagePrefs.findOrLatest(prefs, address) }.getOrNull()
+        android.util.Log.i("HybridPods-Image", "loadBitmap: address=$address, earphone=${earphone?.name}, resource=$resource")
         val custom = runCatching {
             earphone?.imageUri(resource)?.let { uri -> decodeUri(context, uri) }
         }.getOrNull()
         if (custom != null) {
+            android.util.Log.i("HybridPods-Image", "Loaded custom image for $address")
             return custom
         }
 
         // Auto-match MiShuai device image by device name
         val deviceName = earphone?.name?.takeIf { it.isNotBlank() }
             ?: resolveDeviceName(context, address)
+        android.util.Log.i("HybridPods-Image", "Device name resolved: '$deviceName'")
         if (deviceName.isNotBlank()) {
             val miShuaiResId = getMiShuaiImageResId(context, deviceName)
+            android.util.Log.i("HybridPods-Image", "MiShuai image resId: $miShuaiResId for name='$deviceName'")
             if (miShuaiResId != null) {
                 val moduleContext = runCatching {
                     context.createPackageContext(MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY)
-                }.getOrNull() ?: return null
-                return BitmapFactory.decodeResource(moduleContext.resources, miShuaiResId)
+                }.getOrNull()
+                if (moduleContext != null) {
+                    val bitmap = BitmapFactory.decodeResource(moduleContext.resources, miShuaiResId)
+                    android.util.Log.i("HybridPods-Image", "MiShuai bitmap: ${bitmap?.width}x${bitmap?.height} resId=$miShuaiResId")
+                    if (bitmap != null) return bitmap
+                    android.util.Log.w("HybridPods-Image", "BitmapFactory returned null for resId=$miShuaiResId")
+                } else {
+                    android.util.Log.e("HybridPods-Image", "createPackageContext failed for $MODULE_PACKAGE")
+                }
             }
         }
 
         val moduleContext = runCatching {
             context.createPackageContext(MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY)
         }.getOrNull() ?: return null
+        android.util.Log.i("HybridPods-Image", "Using fallback resId=$fallbackResId")
         return BitmapFactory.decodeResource(moduleContext.resources, fallbackResId)
     }
 
@@ -155,14 +167,22 @@ object PodImageLoader {
             if (miShuaiResId != null) {
                 val moduleContext = runCatching {
                     context.createPackageContext(MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY)
-                }.getOrNull() ?: return null
-                return BitmapFactory.decodeResource(moduleContext.resources, miShuaiResId)
+                }.getOrNull()
+                if (moduleContext != null) {
+                    val bitmap = BitmapFactory.decodeResource(moduleContext.resources, miShuaiResId)
+                    android.util.Log.i("HybridPods-Image", "MiShuai bitmap: ${bitmap?.width}x${bitmap?.height} resId=$miShuaiResId")
+                    if (bitmap != null) return bitmap
+                    android.util.Log.w("HybridPods-Image", "BitmapFactory returned null for resId=$miShuaiResId")
+                } else {
+                    android.util.Log.e("HybridPods-Image", "createPackageContext failed for $MODULE_PACKAGE")
+                }
             }
         }
 
         val moduleContext = runCatching {
             context.createPackageContext(MODULE_PACKAGE, Context.CONTEXT_IGNORE_SECURITY)
         }.getOrNull() ?: return null
+        android.util.Log.i("HybridPods-Image", "Using fallback resId=$fallbackResId")
         return BitmapFactory.decodeResource(moduleContext.resources, fallbackResId)
     }
 

@@ -53,6 +53,7 @@ fun AncSwitch(
     smartAncLevel: NoiseControlMode? = null,
     compact: Boolean = false,
     adaptiveModeEnabled: Boolean = true,
+    isMiShuaiDevice: Boolean = false,
     transparencyVocalEnhancement: Boolean = false,
     onTransparencyVocalEnhancementChange: ((Boolean) -> Unit)? = null
 ) {
@@ -80,17 +81,19 @@ fun AncSwitch(
                 modifier = Modifier.weight(1f),
                 compact = compact
             )
-            AncButton(
-                offIconRes = R.drawable.ic_openanc_off,
-                onIconRes = R.drawable.ic_openanc_on,
-                label = stringResource(R.string.wind_nr_title),
-                isSelected = ancStatus == NoiseControlMode.WIND_NR,
-                onClick = { onAncModeChange(NoiseControlMode.WIND_NR) },
-                modifier = Modifier.weight(1f),
-                compact = compact
-            )
-            // Adaptive模式按钮：仅当设置中启用Adaptive模式时显示
-            if (adaptiveModeEnabled) {
+            if (isMiShuaiDevice) {
+                // 咪帅：显示抗风降噪
+                AncButton(
+                    offIconRes = R.drawable.ic_openanc_off,
+                    onIconRes = R.drawable.ic_openanc_on,
+                    label = stringResource(R.string.wind_nr_title),
+                    isSelected = ancStatus == NoiseControlMode.WIND_NR,
+                    onClick = { onAncModeChange(NoiseControlMode.WIND_NR) },
+                    modifier = Modifier.weight(1f),
+                    compact = compact
+                )
+            } else if (adaptiveModeEnabled) {
+                // OPPO：显示自适应
                 AncButton(
                     offIconRes = R.drawable.ic_adaptive_off,
                     onIconRes = R.drawable.ic_adaptive_on,

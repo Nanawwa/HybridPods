@@ -64,6 +64,7 @@ fun PodDetailPage(
     spatialAudioSupported: Boolean = false,
     spatialSoundSupported: Boolean = false,
     adaptiveModeEnabled: Boolean = true,
+    isMiShuaiDevice: Boolean = false,
     eqPreset: Int = -1,
     onEqPresetChange: (Int) -> Unit = {},
     boxImagePath: String? = null,
@@ -110,6 +111,7 @@ fun PodDetailPage(
             ) {
                 podControlItems(
                     podName = podName,
+                    isMiShuaiDevice = isMiShuaiDevice,
                     batteryParams = batteryParams,
                     wearStatus = wearStatus,
                     ancMode = ancMode,
@@ -153,6 +155,7 @@ fun PodDetailPage(
 
         podControlItems(
             podName = podName,
+            isMiShuaiDevice = isMiShuaiDevice,
             batteryParams = batteryParams,
             wearStatus = wearStatus,
             ancMode = ancMode,
@@ -187,6 +190,7 @@ private fun rememberPodImagePainter(path: String?) = remember(path) {
 
 private fun LazyListScope.podControlItems(
     podName: String,
+    isMiShuaiDevice: Boolean,
     batteryParams: BatteryParams,
     wearStatus: WearStatus,
     ancMode: NoiseControlMode,
@@ -234,6 +238,7 @@ private fun LazyListScope.podControlItems(
                 onAncModeChange = onAncModeChange,
                 smartAncLevel = smartAncLevel,
                 adaptiveModeEnabled = adaptiveModeEnabled,
+                isMiShuaiDevice = isMiShuaiDevice,
                 transparencyVocalEnhancement = transparencyVocalEnhancement,
                 onTransparencyVocalEnhancementChange = onTransparencyVocalEnhancementChange
             )
@@ -304,6 +309,15 @@ private fun LazyListScope.podControlItems(
                 selectedIndex = currentEqIndex,
                 onSelectedIndexChange = { onEqPresetChange(eqValues[it]) }
             )
+            // 双设备连接：仅 OPPO 设备显示
+            if (!isMiShuaiDevice) {
+                SwitchPreference(
+                    title = stringResource(R.string.dual_device_connection),
+                    summary = stringResource(if (dualDeviceConnection) R.string.enabled else R.string.off),
+                    checked = dualDeviceConnection,
+                    onCheckedChange = onDualDeviceConnectionChange
+                )
+            }
         }
     }
     item {
