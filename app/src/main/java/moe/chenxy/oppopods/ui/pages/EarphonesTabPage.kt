@@ -86,6 +86,7 @@ internal fun EarphonesTabPage(
                 spatialSoundSupported = spatialSoundSupported,
                 adaptiveModeEnabled = adaptiveModeEnabled,
                 boxImagePath = boxImagePath,
+                connectedDeviceAddress = connectedDeviceAddress,
             )
         } else {
             DevicePickerPage(

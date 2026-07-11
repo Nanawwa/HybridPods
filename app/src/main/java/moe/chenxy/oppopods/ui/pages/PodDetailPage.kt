@@ -34,6 +34,7 @@ import moe.chenxy.oppopods.pods.NoiseControlMode
 import moe.chenxy.oppopods.pods.WearStatus
 import moe.chenxy.oppopods.ui.components.AncSwitch
 import moe.chenxy.oppopods.ui.components.PodStatus
+import moe.chenxy.oppopods.utils.PodImageLoader
 import moe.chenxy.oppopods.utils.miuiStrongToast.data.BatteryParams
 import top.yukonga.miuix.kmp.basic.Card
 import top.yukonga.miuix.kmp.basic.Text
@@ -68,8 +69,11 @@ fun PodDetailPage(
     eqPreset: Int = -1,
     onEqPresetChange: (Int) -> Unit = {},
     boxImagePath: String? = null,
+    connectedDeviceAddress: String? = null,
 ) {
     val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("oppopods_settings", android.content.Context.MODE_PRIVATE) }
 
     if (isLandscape) {
         Row(
@@ -86,7 +90,7 @@ fun PodDetailPage(
                 verticalArrangement = Arrangement.Center
             ) {
                 Image(
-                    painter = rememberPodImagePainter(boxImagePath),
+                    painter = rememberPodImagePainter(boxImagePath, connectedDeviceAddress, prefs),
                     contentDescription = "Earphones",
                     modifier = Modifier
                         .fillMaxWidth(0.82f)
@@ -144,7 +148,7 @@ fun PodDetailPage(
     ) {
         item {
             Image(
-                painter = rememberPodImagePainter(boxImagePath),
+                painter = rememberPodImagePainter(boxImagePath, connectedDeviceAddress, prefs),
                 contentDescription = "Earphones",
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
@@ -180,13 +184,21 @@ fun PodDetailPage(
 }
 
 @Composable
-private fun rememberPodImagePainter(path: String?) = remember(path) {
+private fun rememberPodImagePainter(path: String?, address: String?, prefs: android.content.SharedPreferences?) = remember(path, address) {
+    // Try custom image first
     path?.let {
         runCatching { BitmapFactory.decodeFile(it) }
             .getOrNull()
             ?.let { bitmap -> BitmapPainter(bitmap.asImageBitmap()) }
-    }
-} ?: painterResource(R.drawable.img_box)
+    } ?: run {
+        // Try PodImageLoader (handles MiShuai auto-matching)
+        if (address != null && prefs != null) {
+            val context = LocalContext.current
+            val bitmap = PodImageLoader.loadBoxBitmap(context, prefs, address)
+            bitmap?.let { BitmapPainter(it.asImageBitmap()) }
+        } else null
+    } ?: painterResource(R.drawable.img_box)
+}
 
 private fun LazyListScope.podControlItems(
     podName: String,
