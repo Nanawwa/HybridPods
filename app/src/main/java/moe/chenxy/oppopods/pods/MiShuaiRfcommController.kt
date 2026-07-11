@@ -430,9 +430,16 @@ object MiShuaiRfcommController {
                 val parsed = MiShuaiParser.parseEqMode(packet)
                 Log.i(TAG, "EQ query response: parsed=$parsed, pending=$pendingEqPreset, raw=${packet.joinToString(" ") { "%02X".format(it) }}")
                 if (pendingEqPreset >= 0) {
-                    // EQ set command pending — ignore poll query response to avoid revert
-                    Log.i(TAG, "EQ query ignored: pendingEqPreset=$pendingEqPreset")
-                    pendingEqPreset = -1  // Clear pending after first query response
+                    if (parsed == pendingEqPreset) {
+                        // Earphone confirmed the new value — clear pending
+                        Log.i(TAG, "EQ confirmed: pending=$pendingEqPreset, parsed=$parsed")
+                        pendingEqPreset = -1
+                        currentEqPreset = parsed
+                        changeUIEqPreset(parsed)
+                    } else {
+                        // Earphone hasn't processed yet — ignore this response
+                        Log.i(TAG, "EQ pending: waiting for confirmation, got=$parsed, expected=$pendingEqPreset")
+                    }
                 } else {
                     parsed?.let {
                         if (it != currentEqPreset) {
