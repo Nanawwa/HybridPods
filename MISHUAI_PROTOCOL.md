@@ -10,7 +10,7 @@
 | 项目 | 值 |
 |---|---|
 | 耳机名称 | Mi shuai Glaze Max |
-| 蓝牙地址 | `20:26:05:15:00:DB` |
+| 蓝牙地址 | `XX:XX:XX:XX:XX:XX` (示例，实际地址因设备而异) |
 | 连接方式 | **Bluetooth Classic SPP** (非 BLE GATT) |
 | 控制 App 包名 | `com.mishuai.bt` |
 | SPP UUID | `158627bc-0547-8787-87ba-435ad8571238` (自定义，非标准 SPP) |
@@ -34,7 +34,7 @@
 ```javascript
 Java.perform(function() {
     var adapter = Java.use("android.bluetooth.BluetoothAdapter").getDefaultAdapter();
-    var device = adapter.getRemoteDevice("20:26:05:15:00:DB");
+    var device = adapter.getRemoteDevice("XX:XX:XX:XX:XX:XX");  // 替换为你的耳机 MAC 地址
     device.fetchUuidsWithSdp();
     setTimeout(function() {
         var uuids = device.getUuids();
