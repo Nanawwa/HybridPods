@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      # 签名密钥缓存在仓库私有缓存中，首次自动生成，之后复用，保证升级安装签名一致
+      - name: Cache signing keystore
+        id: keystore-cache
+        uses: actions/cache@v4
+        with:
+          path: release.keystore
+          key: mishuai-keystore-v1
+
+      - name: Generate keystore
+        if: steps.keystore-cache.outputs.cache-hit != 'true'
+        run: |
+          keytool -genkeypair -v -keystore release.keystore \
+            -storepass mishuaipods123 -keypass mishuaipods123 -alias mishuai \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=MiShuaiPods, OU=Dev, O=MiShuaiPods, L=Beijing, ST=Beijing, C=CN"
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease
+        env:
+          SIGNING_KEYSTORE: ${{ github.workspace }}/release.keystore
+          SIGNING_PASSWORD: mishuaipods123
+          SIGNING_KEY_ALIAS: mishuai
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: app/build/outputs/apk/release/app-release.apk
+          generate_release_notes: true

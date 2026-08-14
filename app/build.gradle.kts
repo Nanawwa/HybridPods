@@ -17,6 +17,18 @@ android {
         buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString())
     }
 
+    signingConfigs {
+        create("release") {
+            val ks = System.getenv("SIGNING_KEYSTORE")
+            if (ks != null) {
+                storeFile = file(ks)
+                storePassword = System.getenv("SIGNING_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS") ?: "mishuai"
+                keyPassword = System.getenv("SIGNING_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -28,6 +40,10 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+            val ks = System.getenv("SIGNING_KEYSTORE")
+            if (ks != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
