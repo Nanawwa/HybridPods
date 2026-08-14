@@ -1,0 +1,21 @@
+# IDE
+.idea/
+*.iml
+
+# Gradle
+.gradle/
+.kotlin/
+build/
+
+# 本机配置
+local.properties
+*.hprof
+
+# OS
+.DS_Store
+
+# 反编译参考产物
+咪帅源码/
+
+# 上游参考副本（独立仓库）
+OppoPods-master/

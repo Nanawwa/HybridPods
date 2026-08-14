@@ -1,0 +1,5 @@
+-keep class com.mishuaipods.hook.HookEntry { *; }
+-keep class com.mishuaipods.hook.** { *; }
+-keep class com.mishuaipods.pods.** { *; }
+-keep class io.github.libxposed.** { *; }
+-keep class * extends io.github.libxposed.api.XposedModule { *; }

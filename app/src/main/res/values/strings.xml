@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MiShuaiPods</string>
+    <string name="connected">已连接</string>
+    <string name="disconnected">未连接</string>
+    <string name="connecting">连接中…</string>
+    <string name="anc_off">降噪关</string>
+    <string name="anc_noise_cancel">深度降噪</string>
+    <string name="anc_transparency">环境音</string>
+    <string name="anc_wind_nr">抗风降噪</string>
+    <string name="battery_left">左耳</string>
+    <string name="battery_right">右耳</string>
+    <string name="battery_case">充电盒</string>
+    <string name="anc_control">降噪控制</string>
+    <string name="settings">设置</string>
+    <string name="about">关于</string>
+    <string name="module_version">模块版本</string>
+    <string name="module_status">模块状态</string>
+    <string name="enabled">已启用</string>
+    <string name="disabled">未启用</string>
+    <string name="noise_control_tile">降噪控制</string>
+    <string name="title_home">首页</string>
+    <string name="title_settings">设置</string>
+    <string name="restart_scope">重启作用域</string>
+    <string name="earphones_not_connected">耳机未连接</string>
+    <string name="device_name">设备名</string>
+    <string name="volume">音量</string>
+    <string name="switch_anc_mode">切换降噪模式</string>
+    <string name="popup_title">MiShuaiPods</string>
+</resources>
