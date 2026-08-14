@@ -19,6 +19,8 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 
+data class BatteryResult(val left: Int, val right: Int, val caseVal: Int)
+
 @SuppressLint("MissingPermission", "StaticFieldLeak")
 object SppController {
     private const val TAG = "SppController"
