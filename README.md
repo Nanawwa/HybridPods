@@ -1,3 +1,4 @@
+# 由于不幸丢失耳机 已不再使用咪帅耳机 故停止维护
 # MiShuaiPods
 
 为小米 HyperOS 设备提供系统级咪帅耳机控制的 Xposed 模块（LSPosed / libxposed API）。
